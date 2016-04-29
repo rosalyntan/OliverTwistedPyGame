@@ -20,6 +20,8 @@ class GameSpace:
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
 		self.rain = Rain(self)
+		self.player1 = Player1(self)
+
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
@@ -31,14 +33,24 @@ class GameSpace:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					pygame.quit()
-
+				if event.type == KEYDOWN:
+					if event.key == 275:
+						self.player1.Moving = "R" 
+					#	self.player1.rect = self.player1.rect.move([5,0])
+					elif event.key == 276:
+						self.player1.Moving = "L"
+					#	self.player1.rect = self.player1.rect.move([-5,0])
+				if event.type == KEYUP:
+					self.player1.Moving = "N"
 			#6. send a tick to every game object
 			self.rain.tick()
+			self.player1.tick()
 			#7. finally, display game object
 			self.screen.fill(self.background)
 
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
+			self.screen.blit(self.player1.image, self.player1.rect)
 			pygame.display.flip()
 
 #so we have a class with an array of pennies? or we have an array of pennies in the gamespace?
@@ -62,9 +74,23 @@ class Raindrops(pygame.sprite.Sprite):
 		self.gs = gs
 		self.image = pygame.image.load("media/penny.png")
 		self.rect = self.image.get_rect()
-		self.x = random.randint(0,640)
+		self.x = random.randint(30,610)
 		self.rect.center = [self.x,-25]
 
+class Player1(pygame.sprite.Sprite):
+	def __init__(self, gs = None):
+		pygame.sprite.Sprite.__init__(self)
+		self.gs = gs
+		self.image = pygame.image.load("media/penny.png")
+		self.rect = self.image.get_rect()
+		self.rect.center = [400, 300]
+		self.Moving = "N"
+
+	def tick(self):
+		if self.Moving == "R":
+			self.rect = self.rect.move([5,0])
+		elif self.Moving == "L":
+			self.rect = self.rect.move([-5,0])
 
 def rot_center(image, angle):
 	orig_rect = image.get_rect()
