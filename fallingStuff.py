@@ -16,16 +16,24 @@ class GameSpace:
 		self.background = 50, 50, 50
 
 		self.screen = pygame.display.set_mode(self.size)
-
+		pygame.display.set_caption("ppprrrrooooojjjjeeeeccccttttt")
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
+
+		#random variables in GameSpace
+		self.score1 = 0
 		self.keyspressed = 0
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
 
+
+			for guy in self.rain.drops:
+				if pygame.sprite.collide_rect(guy, self.player1):
+					self.rain.drops.remove(guy)
+					self.score1+=1
 			#4. clock tick regulation (framerate)
 			self.clock.tick(60)
 			
@@ -48,16 +56,15 @@ class GameSpace:
 			self.player1.tick()
 			#7. finally, display game object
 			self.screen.fill(self.background)
-
+			lt = pygame.font.Font('freesansbold.ttf',115)
+			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			self.screen.blit(self.player1.image, self.player1.rect)
 			pygame.display.flip()
 
-#so we have a class with an array of pennies? or we have an array of pennies in the gamespace?
-#MAKE THE OUTER CLASS (CONTAINS ARRAY)
-#MAKE THE INNER CLASS (IS THE PENNIES)
-#EDIT THE BLIT
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
