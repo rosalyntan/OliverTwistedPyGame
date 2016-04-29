@@ -21,7 +21,7 @@ class GameSpace:
 		self.clock = pygame.time.Clock()
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
-
+		self.keyspressed = 0
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
@@ -36,12 +36,13 @@ class GameSpace:
 				if event.type == KEYDOWN:
 					if event.key == 275:
 						self.player1.Moving = "R" 
-					#	self.player1.rect = self.player1.rect.move([5,0])
 					elif event.key == 276:
 						self.player1.Moving = "L"
-					#	self.player1.rect = self.player1.rect.move([-5,0])
+					self.keyspressed +=1
 				if event.type == KEYUP:
-					self.player1.Moving = "N"
+					self.keyspressed -=1
+					if self.keyspressed ==0:
+						self.player1.Moving = "N"
 			#6. send a tick to every game object
 			self.rain.tick()
 			self.player1.tick()
@@ -91,6 +92,11 @@ class Player1(pygame.sprite.Sprite):
 			self.rect = self.rect.move([5,0])
 		elif self.Moving == "L":
 			self.rect = self.rect.move([-5,0])
+		if self.rect.center[0]<20:
+			self.rect.center = [20, self.rect.center[1]]
+		elif self.rect.center[0]>620:
+			self.rect.center = [620, self.rect.center[1]]
+			
 
 def rot_center(image, angle):
 	orig_rect = image.get_rect()
