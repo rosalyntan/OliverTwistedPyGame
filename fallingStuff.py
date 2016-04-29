@@ -5,6 +5,7 @@ import pygame
 import os
 import sys
 from pygame.locals import *
+import random
 
 class GameSpace:
 	def main(self):
@@ -18,8 +19,7 @@ class GameSpace:
 
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
-		self.player = Player(self)
-
+		self.rain = Rain(self)
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
@@ -33,32 +33,37 @@ class GameSpace:
 					pygame.quit()
 
 			#6. send a tick to every game object
-			self.player.tick()
+			self.rain.tick()
 			#7. finally, display game object
 			self.screen.fill(self.background)
 
-			self.screen.blit(self.player.image, self.player.rect)
-
+			for guy in self.rain.drops:
+				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
 
-#so we have a class where
+#so we have a class with an array of pennies? or we have an array of pennies in the gamespace?
+#MAKE THE OUTER CLASS (CONTAINS ARRAY)
+#MAKE THE INNER CLASS (IS THE PENNIES)
+#EDIT THE BLIT
 
-class Player(pygame.sprite.Sprite):
-
+class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
+		self.drops = []
+	def tick(self):
+		create = random.randint(1,10)
+		if create==8:
+			self.drops.append(Raindrops())
+		for guy in self.drops:
+			guy.rect = guy.rect.move([0,1])
+
+class Raindrops(pygame.sprite.Sprite):
+	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
 		self.image = pygame.image.load("media/penny.png")
 		self.rect = self.image.get_rect()
-
-		#keep original image to limit resize errors
-		self.orig_image = self.image
-
-
-	def tick(self):
-		#get the mouse x and y position on the screen
-		mx, my = pygame.mouse.get_pos()
-		self.rect = self.rect.move([1,1])
+		self.x = random.randint(0,640)
+		self.rect.center = [self.x,-25]
 
 
 def rot_center(image, angle):
