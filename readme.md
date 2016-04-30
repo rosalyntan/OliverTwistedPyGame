@@ -32,6 +32,18 @@ http://i45.tinypic.com/osyb61.png
 KOBE IMAGE:
 http://i.imgur.com/ZZFIWZ9.png
 
+PORRIDGE IMAGE:
+http://www.xteddy.org/porridge/bowl-of-cooked-porridge.jpg
+
+OLIVER IMAGE:
+http://www.jonathankettleborough.com/wp-content/uploads/2012/12/Please-sir-may-I-have-some-more.jpg
+
+BOWL IMAGE:
+https://cdn0.rubylane.com/shops/741898/Wx2e763.1L.jpg
+
+ORPHANAGE IMAGE:
+https://matthaslam.files.wordpress.com/2012/11/roman-polanski-oliver-twist-ben-kingsley.jpg
+
 CODE ABOUT GETTING THE ROTATION TO WORK:
 http://stackoverflow.com/questions/35272863/pygame-border-of-image-get-cut-while-rotating/35274863
 

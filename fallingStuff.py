@@ -6,35 +6,10 @@ import os
 import sys
 from pygame.locals import *
 import random
+from modes import pirates, otwist, bball
 
-pirates = dict([
-	("player_image","pirate.png"),
-	("background_image","piratebeach.jpg"),
-	("box_image", "treasurechest.png"), 
-	("ball_image", "piratecoin.png"), 
-	('gun_image', "canon2.jpg"), 
-	('player_start', [300,400]),
-	('max_player_left',20),
-	('max_player_right',620),
-	('box_offset',[-15,38]),
-	('background_scale',[854,480]),
-	('catcher_offset',[-10,40])
-])
+mode = otwist
 
-bball = dict([
-	("player_image","kobe.png"),
-	("background_image","lakerscourt.png"),
-	("box_image", "hoop.png"), 
-	("ball_image", "basketball.png"), 
-	('gun_image', "canon2.jpg"), 
-	('player_start', [300,400]),
-	('max_player_left',-110),
-	('max_player_right',475),
-	('box_offset',[140,40]),
-	('background_scale',[854,480]),
-	('catcher_offset',[140,0])
-])
-mode = bball
 class GameSpace:
 	def main(self):
 		#1. basic initialization
