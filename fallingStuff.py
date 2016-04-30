@@ -56,13 +56,14 @@ class GameSpace:
 			self.player1.tick()
 			#7. finally, display game object
 			self.screen.fill(self.background)
+			for guy in self.rain.drops:
+				self.screen.blit(guy.image, guy.rect)
+			self.screen.blit(self.player1.image, self.player1.rect)
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
-			for guy in self.rain.drops:
-				self.screen.blit(guy.image, guy.rect)
-			self.screen.blit(self.player1.image, self.player1.rect)
+
 			pygame.display.flip()
 
 
