@@ -14,7 +14,7 @@ class GameSpace:
 		pygame.init()
 
 		self.size = self.width, self.height = 640, 480
-		self.black = 0, 0, 0
+		self.black = 0, 100, 0
 
 		self.screen = pygame.display.set_mode(self.size)
 
@@ -47,11 +47,11 @@ class GameSpace:
 			#7. finally, display game object
 			self.screen.fill(self.black)
 
-			self.screen.blit(self.player.image, self.player.rect)
-
 
 			for laser in self.player.lasers:
 				self.screen.blit(laser.image, laser.rect)
+
+			self.screen.blit(self.player.image, self.player.rect)
 			pygame.display.flip()
 
 class Player(pygame.sprite.Sprite):
@@ -63,37 +63,41 @@ class Player(pygame.sprite.Sprite):
 		self.gs = gs
 		self.image = pygame.image.load("media/canon2.jpg")
 		self.rect = self.image.get_rect()
-		self.rect.center = (300, 230)
+		self.rect.center = (640, 230)
 		self.lasers = []
 		#keep original image to limit resize errors
 		self.orig_image = self.image
 
 		#if I can fire laser beams, this flag will say whether I should be firing them right now
 		self.tofire = False
-		self.isPlaying = False
 
 	def tick(self):
 		#get the mouse x and y position on the screen
 		mx, my = pygame.mouse.get_pos()
 
+		for guy in self.lasers:
+			if guy.rect.center[0] < -20 or guy.rect.center[0] > 660:
+				self.lasers.remove(guy)	
+				print "MOTHERFUCKER"
+			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
+				self.lasers.remove(guy)
 		#this conditional prevents movement while firing
 		if self.tofire == True:
-			if self.isPlaying == False:
-				self.realx=mx
-				self.realy=my
-				self.isPlaying=True
+			self.realx=mx
+			self.realy=my
 	
 			#code to emit a laser beam block
 			xSlope = self.realx-self.rect.center[0]
 			ySlope = self.realy-self.rect.center[1]
 			total = math.fabs(xSlope)+math.fabs(ySlope)
 			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
-			
+			self.tofire = False
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
 			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
-			self.image = rot_center(self.orig_image, angle)	
-	
+			#self.image = rot_center(self.orig_image, angle)	
+			self.image = pygame.transform.rotate(self.orig_image, angle)
+			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = False
 
 class Laser(pygame.sprite.Sprite):
@@ -104,7 +108,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/deathstar.png")
+		self.image = pygame.image.load("media/cannonball.png")
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 	
@@ -115,19 +119,6 @@ class Laser(pygame.sprite.Sprite):
 		self.rect = self.rect.move([self.xm,self.ym])
 		return False
 
-def rot_center(image, angle):
-	orig_rect = image.get_rect()
-	rot_image = pygame.transform.rotate(image, angle)
-	rot_rect = orig_rect.copy()
-	rot_rect.center = rot_image.get_rect().center
-	rot_image = rot_image.subsurface(rot_rect).copy()
-	return rot_image
-
-def rott_center(image, angle):
-	loc = image.get_rect().center
-	rot_sprite = pygame.transform.rotate(image, angle)
-	rot_sprite.get_rect().center = loc
-	return rot_sprite
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
 

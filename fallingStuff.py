@@ -14,7 +14,6 @@ class GameSpace:
 
 		self.size = self.width, self.height = 640, 480
 		self.background = 50, 50, 50
-
 		self.screen = pygame.display.set_mode(self.size)
 		pygame.display.set_caption("ppprrrrooooojjjjeeeeccccttttt")
 		#2. set up game objects
@@ -25,13 +24,14 @@ class GameSpace:
 		#random variables in GameSpace
 		self.score1 = 0
 		self.keyspressed = 0
+
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
 
 
 			for guy in self.rain.drops:
-				if pygame.sprite.collide_rect(guy, self.player1):
+				if pygame.sprite.collide_rect(guy, self.player1.box.catcher):
 					self.rain.drops.remove(guy)
 					self.score1+=1
 			#4. clock tick regulation (framerate)
@@ -56,14 +56,15 @@ class GameSpace:
 			self.player1.tick()
 			#7. finally, display game object
 			self.screen.fill(self.background)
-			for guy in self.rain.drops:
-				self.screen.blit(guy.image, guy.rect)
 			self.screen.blit(self.player1.image, self.player1.rect)
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
-
+			self.screen.blit(self.player1.box.catcher.image, self.player1.box.catcher.rect)
+			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
+			for guy in self.rain.drops:
+				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
 
 
@@ -90,30 +91,46 @@ class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/penny.png")
+		self.image = pygame.image.load("media/pirate.png")
 		self.rect = self.image.get_rect()
 		self.rect.center = [400, 300]
 		self.Moving = "N"
-
+		self.box = Box(self.rect.center)
 	def tick(self):
 		if self.Moving == "R":
 			self.rect = self.rect.move([5,0])
+			self.box.rect = self.box.rect.move([5,0])
+			self.box.catcher.rect = self.box.catcher.rect.move([5,0])
 		elif self.Moving == "L":
 			self.rect = self.rect.move([-5,0])
+			self.box.rect = self.box.rect.move([-5,0])
+			self.box.catcher.rect = self.box.catcher.rect.move([-5,0])
 		if self.rect.center[0]<20:
 			self.rect.center = [20, self.rect.center[1]]
+			#self.box.rect = self.box.rect.move([5,0])
 		elif self.rect.center[0]>620:
 			self.rect.center = [620, self.rect.center[1]]
-			
+			#self.box.rect = self.box.rect.move([5,0])		
+class Box(pygame.sprite.Sprite):
+	def __init__(self, center):
+		pygame.sprite.Sprite.__init__(self)
+		self.gs = gs
+		self.image = pygame.image.load("media/treasurechest.png")
+		self.rect = self.image.get_rect()
+		self.x = center[0]-15
+		self.y = center[1]+38
+		self.rect.center = [self.x,self.y]
+		self.catcher = Catcher(self.rect.center)
 
-def rot_center(image, angle):
-	orig_rect = image.get_rect()
-	rot_image = pygame.transform.rotate(image, angle)
-	rot_rect = orig_rect.copy()
-	rot_rect.center = rot_image.get_rect().center
-	rot_image = rot_image.subsurface(rot_rect).copy()
-	return rot_image
-
+class Catcher(pygame.sprite.Sprite):
+	def __init__(self,center):
+		pygame.sprite.Sprite.__init__(self)
+		self.gs = gs
+		self.image = pygame.image.load("media/catcher.png")
+		self.rect = self.image.get_rect()
+		self.x = center[0]+5
+		self.y = center[1]+15
+		self.rect.center = [self.x, self.y]
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
 
