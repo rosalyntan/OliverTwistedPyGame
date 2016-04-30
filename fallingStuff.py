@@ -21,7 +21,20 @@ pirates = dict([
 	('catcher_offset',[-10,40])
 ])
 
-mode = pirates
+bball = dict([
+	("player_image","kobe.png"),
+	("background_image","lakerscourt.png"),
+	("box_image", "hoop.png"), 
+	("ball_image", "basketball.png"), 
+	('gun_image', "canon2.jpg"), 
+	('player_start', [300,400]),
+	('max_player_left',20),
+	('max_player_right',475),
+	('box_offset',[140,40]),
+	('background_scale',[854,480]),
+	('catcher_offset',[140,0])
+])
+mode = bball
 class GameSpace:
 	def main(self):
 		#1. basic initialization
@@ -51,6 +64,7 @@ class GameSpace:
 				if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
 					self.rain.drops.remove(guy)
 					self.score1+=1
+					print self.player1.rect.center
 			#4. clock tick regulation (framerate)
 			self.clock.tick(60)
 			
@@ -140,9 +154,8 @@ def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
 
 def collision(ball_center, catcher_point):
-	fuck = dist(ball_center[0], ball_center[1], catcher_point[0], catcher_point[1]) 
-	if fuck<=25:
-		print ball_center, catcher_point, fuck
+	distance = dist(ball_center[0], ball_center[1], catcher_point[0], catcher_point[1]) 
+	if distance<=25:
 		return True
 	else:
 		return False
