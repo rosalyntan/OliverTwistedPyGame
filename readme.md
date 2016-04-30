@@ -20,6 +20,18 @@ http://gallery.yopriceville.com/Free-Clipart-Pictures/Money-PNG/Treasure_Chest_P
 PIRATE BACKGROUND IMAGE:
 https://s-media-cache-ak0.pinimg.com/736x/05/4e/8d/054e8d3ca8f3c51e397fd5f6fda625c6.jpg
 
+BASKETBALL IMAGE:
+http://image.fg-a.com/sports/large-basketball.gif
+
+BASKETBALL HOOP IMAGE:
+http://cdn.shopify.com/s/files/1/0546/0157/products/Net_White.png?v=1448163544
+
+LAKERS COURT IMAGE:
+http://i45.tinypic.com/osyb61.png
+
+KOBE IMAGE:
+http://i.imgur.com/ZZFIWZ9.png
+
 CODE ABOUT GETTING THE ROTATION TO WORK:
 http://stackoverflow.com/questions/35272863/pygame-border-of-image-get-cut-while-rotating/35274863
 
