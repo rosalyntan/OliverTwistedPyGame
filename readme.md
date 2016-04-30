@@ -16,3 +16,12 @@ http://www.clipartlord.com/wp-content/uploads/2015/11/pirate10.png
 
 TREASURE CHEST IMAGE:
 http://gallery.yopriceville.com/Free-Clipart-Pictures/Money-PNG/Treasure_Chest_PNG_Clipart_Picture#.VyRZVJMrJsN
+
+PIRATE BACKGROUND IMAGE:
+https://s-media-cache-ak0.pinimg.com/736x/05/4e/8d/054e8d3ca8f3c51e397fd5f6fda625c6.jpg
+
+CODE ABOUT GETTING THE ROTATION TO WORK:
+http://stackoverflow.com/questions/35272863/pygame-border-of-image-get-cut-while-rotating/35274863
+
+CODE ABOUT GETTING BACKGROUND IMAGE:
+http://stackoverflow.com/questions/28005641/how-to-add-a-background-image-into-pygame
