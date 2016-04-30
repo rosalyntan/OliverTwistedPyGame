@@ -43,8 +43,6 @@ class GameSpace:
 			for laser in self.player.lasers:
 				if (laser.tick()):
 					self.player.lasers.remove(laser)
-					if(self.enemy.isExploding==False):
-						self.enemy.hp-=1
 
 			#7. finally, display game object
 			self.screen.fill(self.black)
@@ -63,8 +61,9 @@ class Player(pygame.sprite.Sprite):
 		self.realx = 1
 		self.realy = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/deathstar.png")
+		self.image = pygame.image.load("media/canon2.jpg")
 		self.rect = self.image.get_rect()
+		self.rect.center = (300, 230)
 		self.lasers = []
 		#keep original image to limit resize errors
 		self.orig_image = self.image
@@ -92,7 +91,7 @@ class Player(pygame.sprite.Sprite):
 			
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi-40
+			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
 			self.image = rot_center(self.orig_image, angle)	
 	
 			self.tofire = False
@@ -105,7 +104,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/penny.png")
+		self.image = pygame.image.load("media/deathstar.png")
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 	
@@ -124,6 +123,11 @@ def rot_center(image, angle):
 	rot_image = rot_image.subsurface(rot_rect).copy()
 	return rot_image
 
+def rott_center(image, angle):
+	loc = image.get_rect().center
+	rot_sprite = pygame.transform.rotate(image, angle)
+	rot_sprite.get_rect().center = loc
+	return rot_sprite
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
 
