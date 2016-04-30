@@ -1,12 +1,15 @@
 # Rosalyn Tan, Nancy McNamara
 
+# client game window only opens after server game window closes
+# issue possibly stemming from the loop within the game state--data doesn't get transfered over to client until after server game loop ends. however, main for the server is called the data is sent to the client so idk
+
 import os
 import sys
 import math
 import random
 import cPickle as pickle
 import zlib
-import copy
+#import copy
 
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
@@ -178,10 +181,12 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 		print 'received data: ' + data
 	def connectionMade(self):
-		pd = pickle.dumps(copy.deepcopy(self.gs))
+		pd = pickle.dumps(self.gs)
 		smol = zlib.compress(pd)
 		self.transport.write(smol)
+		print 'game sent to client'
 		self.gs.main()
+		print 'game closed'
 	def connectionLost(self, reason):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()

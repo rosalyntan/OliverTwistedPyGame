@@ -175,8 +175,10 @@ class ClientConnection(Protocol):
 	def __init__(self):
 		self.gs = None
 	def dataReceived(self, data):
+		print 'game received from client'
 		big = zlib.decompress(data)
 		self.gs = pickle.loads(big)
+		print 'game initialized'
 		self.gs.main()
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
