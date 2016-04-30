@@ -107,16 +107,17 @@ class GameSpace:
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
+		self.gs = gs
 		self.drops = []
 	def tick(self):
 		create = random.randint(1,10)
 		if create==8:
-			self.drops.append(Raindrops())
+			self.drops.append(Raindrops(self.gs))
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1])
 
 class Raindrops(pygame.sprite.Sprite):
-	def __init__(self):
+	def __init__(self, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
 		self.image = pygame.image.load("media/"+mode['ball_image'])
@@ -132,7 +133,7 @@ class Player1(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.center = mode['player_start']
 		self.Moving = "N"
-		self.box = Box(self.rect.center)
+		self.box = Box(self.rect.center, self.gs)
 	def tick(self):
 		if self.Moving == "R":
 			self.rect = self.rect.move([5,0])
@@ -148,7 +149,7 @@ class Player1(pygame.sprite.Sprite):
 			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
 
 class Box(pygame.sprite.Sprite):
-	def __init__(self, center):
+	def __init__(self, center, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
 		self.image = pygame.image.load("media/"+mode['box_image'])
