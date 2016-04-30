@@ -4,6 +4,8 @@ import os
 import sys
 import math
 import random
+import cPickle as pickle
+import zlib
 
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
@@ -175,8 +177,10 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 		print 'received data: ' + data
 	def connectionMade(self):
-		self.transport.write('player 1 connected')
 		self.gs.main()
+		pd = pickle.dumps(self.gs)
+		smol = zlib.compress(pd)
+		self.transport.write(smol)
 	def connectionLost(self, reason):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
