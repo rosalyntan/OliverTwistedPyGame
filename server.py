@@ -6,6 +6,7 @@ import math
 import random
 import cPickle as pickle
 import zlib
+import copy
 
 from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
@@ -177,7 +178,7 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 		print 'received data: ' + data
 	def connectionMade(self):
-		pd = pickle.dumps(self.gs)
+		pd = pickle.dumps(copy.deepcopy(self.gs))
 		smol = zlib.compress(pd)
 		self.transport.write(smol)
 		self.gs.main()
