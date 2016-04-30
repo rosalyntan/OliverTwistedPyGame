@@ -177,10 +177,10 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 		print 'received data: ' + data
 	def connectionMade(self):
-		self.gs.main()
 		pd = pickle.dumps(self.gs)
 		smol = zlib.compress(pd)
 		self.transport.write(smol)
+		self.gs.main()
 	def connectionLost(self, reason):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
