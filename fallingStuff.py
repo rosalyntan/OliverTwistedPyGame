@@ -28,7 +28,7 @@ bball = dict([
 	("ball_image", "basketball.png"), 
 	('gun_image', "canon2.jpg"), 
 	('player_start', [300,400]),
-	('max_player_left',20),
+	('max_player_left',-110),
 	('max_player_right',475),
 	('box_offset',[140,40]),
 	('background_scale',[854,480]),
@@ -64,7 +64,6 @@ class GameSpace:
 				if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
 					self.rain.drops.remove(guy)
 					self.score1+=1
-					print self.player1.rect.center
 			#4. clock tick regulation (framerate)
 			self.clock.tick(60)
 			
