@@ -7,33 +7,37 @@ import sys
 from pygame.locals import *
 import random
 
-pirates = dict([("player_image","pirate.png"),("background_image","piratebeach.jpg"),("box_image", "treasurechest.png"), ("ball_image", "piratecoin.png"), ('gun_image', "canon2.jpg"), ('player_x',300),('player_y',400)])
+pirates = dict([
+	("player_image","pirate.png"),
+	("background_image","piratebeach.jpg"),
+	("box_image", "treasurechest.png"), 
+	("ball_image", "piratecoin.png"), 
+	('gun_image', "canon2.jpg"), 
+	('player_start', [300,400]),
+	('max_player_left',20),
+	('max_player_right',620),
+	('box_offset',[-15,38]),
+	('background_scale',[854,480]),
+	('catcher_offset',[-10,40])
+])
 
-class Mode:
-	def __init__(self, dict):
-		self.player_image = dict['player_image']
-		self.background_image = dict['background_image']
-		self.box_image = dict['box_image']
-		self.ball_image = dict['ball_image']
-		self.gun_image = dict['gun_image']
-		self.player_start = [dict['player_x'],dict['player_y']]
-mode = Mode(pirates)
-
+mode = pirates
 class GameSpace:
 	def main(self):
 		#1. basic initialization
 		pygame.init()
 
 		self.size = self.width, self.height = 640, 480
-		self.background = 50, 50, 50
 		self.screen = pygame.display.set_mode(self.size)
 		pygame.display.set_caption("ppprrrrooooojjjjeeeeccccttttt")
+
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
-		bg = pygame.image.load("media/"+mode.background_image)
-		bg = pygame.transform.scale(bg, (854,480))
+
+		bg = pygame.image.load("media/"+mode['background_image'])
+		bg = pygame.transform.scale(bg, mode['background_scale'])
 		#random variables in GameSpace
 		self.score1 = 0
 		self.keyspressed = 0
@@ -44,7 +48,7 @@ class GameSpace:
 
 
 			for guy in self.rain.drops:
-				if pygame.sprite.collide_rect(guy, self.player1.box):
+				if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
 					self.rain.drops.remove(guy)
 					self.score1+=1
 			#4. clock tick regulation (framerate)
@@ -68,7 +72,6 @@ class GameSpace:
 			self.rain.tick()
 			self.player1.tick()
 			#7. finally, display game object
-			self.screen.fill(self.background)
 			self.screen.blit(bg, (0,0))
 			self.screen.blit(self.player1.image, self.player1.rect)
 			lt = pygame.font.Font('freesansbold.ttf',115)
@@ -95,7 +98,7 @@ class Raindrops(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode.ball_image)
+		self.image = pygame.image.load("media/"+mode['ball_image'])
 		self.rect = self.image.get_rect()
 		self.x = random.randint(30,610)
 		self.rect.center = [self.x,-25]
@@ -104,36 +107,45 @@ class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode.player_image)
+		self.image = pygame.image.load("media/"+mode['player_image'])
 		self.rect = self.image.get_rect()
-		self.rect.center = mode.player_start
+		self.rect.center = mode['player_start']
 		self.Moving = "N"
 		self.box = Box(self.rect.center)
 	def tick(self):
 		if self.Moving == "R":
 			self.rect = self.rect.move([5,0])
-			self.box.rect = self.box.rect.move([5,0])
+			self.box.rect = self.box.rect.move([5,0])	
 		elif self.Moving == "L":
 			self.rect = self.rect.move([-5,0])
 			self.box.rect = self.box.rect.move([-5,0])
-		if self.rect.center[0]<20:
-			self.rect.center = [20, self.rect.center[1]]
-			#self.box.rect = self.box.rect.move([5,0])
-		elif self.rect.center[0]>620:
-			self.rect.center = [620, self.rect.center[1]]
-			#self.box.rect = self.box.rect.move([5,0])		
+		if self.rect.center[0]<mode['max_player_left']:
+			self.rect.center = [mode['max_player_left'], self.rect.center[1]]
+			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
+		elif self.rect.center[0]>mode['max_player_right']:
+			self.rect.center = [mode['max_player_right'], self.rect.center[1]]
+			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
+
 class Box(pygame.sprite.Sprite):
 	def __init__(self, center):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode.box_image)
+		self.image = pygame.image.load("media/"+mode['box_image'])
 		self.rect = self.image.get_rect()
-		self.x = center[0]-15
-		self.y = center[1]+38
+		self.x = center[0]+mode['box_offset'][0]
+		self.y = center[1]+mode['box_offset'][1]
 		self.rect.center = [self.x,self.y]
 
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
+
+def collision(ball_center, catcher_point):
+	fuck = dist(ball_center[0], ball_center[1], catcher_point[0], catcher_point[1]) 
+	if fuck<=25:
+		print ball_center, catcher_point, fuck
+		return True
+	else:
+		return False
 
 if __name__ == '__main__':
 	gs = GameSpace()
