@@ -1,5 +1,7 @@
 # Rosalyn Tan, Nancy McNamara
 
+from modes import pirates, bball, otwist
+
 import os
 import sys
 import math
@@ -17,33 +19,6 @@ from pygame.locals import *
 SERVER_HOST = 'student01.cse.nd.edu'
 SERVER_PORT = 40041
 
-pirates = dict([
-	("player_image","pirate.png"),
-	("background_image","piratebeach.jpg"),
-	("box_image", "treasurechest.png"), 
-	("ball_image", "piratecoin.png"), 
-	('gun_image', "canon2.jpg"), 
-	('player_start', [300,400]),
-	('max_player_left',20),
-	('max_player_right',620),
-	('box_offset',[-15,38]),
-	('background_scale',[854,480]),
-	('catcher_offset',[-10,40])
-])
-
-bball = dict([
-	("player_image","kobe.png"),
-	("background_image","lakerscourt.png"),
-	("box_image", "hoop.png"), 
-	("ball_image", "basketball.png"), 
-	('gun_image', "canon2.jpg"), 
-	('player_start', [300,400]),
-	('max_player_left',-110),
-	('max_player_right',475),
-	('box_offset',[140,40]),
-	('background_scale',[854,480]),
-	('catcher_offset',[140,0])
-])
 mode = bball
 
 class GameSpace:
