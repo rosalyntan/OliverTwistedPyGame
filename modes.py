@@ -1,4 +1,16 @@
-
+sesame = dict([
+	("player_image","cookiemonster.png"),
+	("background_image","sb.png"),
+	("box_image", "cookiejar.png"), 
+	("ball_image", "cookie.png"), 
+	('gun_image', "canon2.jpg"), 
+	('player_start', [300,450]),
+	('max_player_left',20),
+	('max_player_right',620),
+	('box_offset',[35,-100]),
+	('background_scale',[721,480]),
+	('catcher_offset',[35,-115])
+])
 
 pirates = dict([
 	("player_image","pirate.png"),

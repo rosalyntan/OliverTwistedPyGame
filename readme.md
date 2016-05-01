@@ -44,8 +44,35 @@ https://cdn0.rubylane.com/shops/741898/Wx2e763.1L.jpg
 ORPHANAGE IMAGE:
 https://matthaslam.files.wordpress.com/2012/11/roman-polanski-oliver-twist-ben-kingsley.jpg
 
+SESAME STREET IMAGE:
+http://www.trbimg.com/img-552d873c/turbine/la-et-st-sesame-street-new-sets-for-46th-season-20150414
+
+COOKIE JAR IMAGE:
+http://images.clipartpanda.com/cookie-jar-clipart-cookie.png
+
+COOKIE MONSTER IMAGE:
+http://cliparts.co/cliparts/6ip/6Kd/6ip6KdxpT.png
+
+COOKIE IMAGE:
+https://www.hamptoncreek.com/img/p-just-cookies/panel-cookie-choc-cookie.png
+
+MICHELLE OBAMA BODY IMAGE:
+http://6uh9u7hhy8-flywheel.netdna-ssl.com/wp-content/uploads/2012/09/michelle-obama-dnc-2012-j-crew-tracy-reese.jpg
+
+MICHELLE OBAMA ARM IMAGE:
+https://sassandglam.files.wordpress.com/2012/09/michelle-pointing-keivom.jpg
+
+LETTUCE IMAGE:
+http://1.bp.blogspot.com/_d5Vg_x-C0_o/SwYi6AJkVAI/AAAAAAAAAC8/VL0iP_dqRAs/s1600/lettuce+myonlineorganic.com.jpg
+
 CODE ABOUT GETTING THE ROTATION TO WORK:
 http://stackoverflow.com/questions/35272863/pygame-border-of-image-get-cut-while-rotating/35274863
 
 CODE ABOUT GETTING BACKGROUND IMAGE:
 http://stackoverflow.com/questions/28005641/how-to-add-a-background-image-into-pygame
+
+CODE ABOUT PROTO:
+http://stackoverflow.com/questions/12469827/sending-pygames-event-data-to-a-twisted-server
+
+CODE ABOUT TEXT ON SCREEN:
+https://pythonprogramming.net/displaying-text-pygame-screen/

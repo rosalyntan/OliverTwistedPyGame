@@ -6,9 +6,9 @@ import os
 import sys
 from pygame.locals import *
 import random
-from modes import pirates, otwist, bball
+from modes import sesame, pirates, otwist, bball
 
-mode = bball
+mode = sesame
 
 class GameSpace:
 	def main(self):

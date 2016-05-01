@@ -21,7 +21,7 @@ class GameSpace:
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
 		self.player = Player(self)
-
+		self.michelle = Michelle(self)
 		#3. start game loop
 		while 1:
 			mx, my = pygame.mouse.get_pos()
@@ -46,7 +46,7 @@ class GameSpace:
 
 			#7. finally, display game object
 			self.screen.fill(self.black)
-
+			self.screen.blit(self.michelle.image, self.michelle.rect)
 
 			for laser in self.player.lasers:
 				self.screen.blit(laser.image, laser.rect)
@@ -61,9 +61,9 @@ class Player(pygame.sprite.Sprite):
 		self.realx = 1
 		self.realy = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/canon2.jpg")
+		self.image = pygame.image.load("media/michellearm.png")
 		self.rect = self.image.get_rect()
-		self.rect.center = (640, 230)
+		self.rect.center = (600, 205)
 		self.lasers = []
 		#keep original image to limit resize errors
 		self.orig_image = self.image
@@ -94,12 +94,18 @@ class Player(pygame.sprite.Sprite):
 			self.tofire = False
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
+			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+180
 			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = False
-
+class Michelle(pygame.sprite.Sprite):
+	def __init__(self, gs=None):
+		pygame.sprite.Sprite.__init__(self)
+		self.gs=gs
+		self.image=pygame.image.load("media/michellebody.png")
+		self.rect=self.image.get_rect()
+		self.rect.center = [622,300]
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, gs=None, xc=320, yc=240, xm=1, ym=1):
 		pygame.sprite.Sprite.__init__(self)
@@ -108,7 +114,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/cannonball.png")
+		self.image = pygame.image.load("media/lettuce.png")
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 	
