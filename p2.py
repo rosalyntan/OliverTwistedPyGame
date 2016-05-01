@@ -233,9 +233,12 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
+#		print 'data ' + data
 		if data == 'player 1 ready':
-			self.ready = 1
+			print 'string' + data
+			self.client.ready = 1
 		else:
+#			print 'not ready ' + data
 			data =  pickle.loads(data)
 			self.client.player1.rect.center = data[0]
 			self.client.player1.box.rect.center = data[1]
