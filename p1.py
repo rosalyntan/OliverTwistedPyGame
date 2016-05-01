@@ -1,6 +1,9 @@
 # Rosalyn Tan, Nancy McNamara
 
-from modes import pirates, bball, otwist
+# client game window only opens after server game window closes
+# issue possibly stemming from the loop within the game state--data doesn't get transfered over to client until after server game loop ends. however, main for the server is called the data is sent to the client so idk
+
+from modes import otwist, bball, pirates
 
 import os
 import sys
@@ -8,21 +11,22 @@ import math
 import random
 import cPickle as pickle
 import zlib
+#import copy
 
-from twisted.internet.protocol import ClientFactory
+from twisted.internet.protocol import Factory
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
-
+from twisted.internet.defer import DeferredQueue
+from twisted.internet.task import LoopingCall
 import pygame
 from pygame.locals import *
 
-SERVER_HOST = 'student01.cse.nd.edu'
 SERVER_PORT = 40041
 
-mode = bball
+mode = pirates
 
 class GameSpace:
-	def main(self):
+	def __init__(self):
 		#1. basic initialization
 		pygame.init()
 
@@ -35,43 +39,45 @@ class GameSpace:
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 
-		bg = pygame.image.load("media/"+mode['background_image'])
-		bg = pygame.transform.scale(bg, mode['background_scale'])
+		self.bg = pygame.image.load("media/"+mode['background_image'])
+		self.bg = pygame.transform.scale(self.bg, mode['background_scale'])
 		#random variables in GameSpace
 		self.score1 = 0
 		self.keyspressed = 0
+		self.connected = False
+	def game_loop(self):
 
-		#3. start game loop
-		while 1:
-			mx, my = pygame.mouse.get_pos()
+	#		mx, my = pygame.mouse.get_pos()
 
 
-			for guy in self.rain.drops:
-				if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
-					self.rain.drops.remove(guy)
-					self.score1+=1
-			#4. clock tick regulation (framerate)
-			self.clock.tick(60)
+		for guy in self.rain.drops:
+			if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
+				self.rain.drops.remove(guy)
+				self.score1+=1
+		#4. clock tick regulation (framerate)
+		self.clock.tick(60)
 			
-			#5. handle user inputs
-			for event in pygame.event.get():
-				if event.type == pygame.QUIT:
-					pygame.quit()
-				if event.type == KEYDOWN:
-					if event.key == 275:
-						self.player1.Moving = "R" 
-					elif event.key == 276:
-						self.player1.Moving = "L"
-					self.keyspressed +=1
-				if event.type == KEYUP:
-					self.keyspressed -=1
-					if self.keyspressed ==0:
-						self.player1.Moving = "N"
+		#5. handle user inputs
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+			if event.type == KEYDOWN:
+				if event.key == 275:
+					self.player1.Moving = "R" 
+				elif event.key == 276:
+					self.player1.Moving = "L"
+				self.keyspressed +=1
+			if event.type == KEYUP:
+				self.keyspressed -=1
+				if self.keyspressed ==0:
+					self.player1.Moving = "N"
+		if self.connected:
 			#6. send a tick to every game object
 			self.rain.tick()
 			self.player1.tick()
+			self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1]))
 			#7. finally, display game object
-			self.screen.blit(bg, (0,0))
+			self.screen.blit(self.bg, (0,0))
 			self.screen.blit(self.player1.image, self.player1.rect)
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
@@ -81,16 +87,28 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
-
-
+		else:
+			self.screen.fill((0,0,0))
+			lt = pygame.font.Font('freesansbold.ttf',115)
+			textSurf = lt.render("BUTTONS", True, (5, 100, 5))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
+			pygame.display.flip()
+	def write(self,data):
+		pass
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
 		self.drops = []
+		self.created = False
 	def tick(self):
 		create = random.randint(1,10)
 		if create==8:
-			self.drops.append(Raindrops(self.gs))
+			self.created = Raindrops(self.gs)
+			self.drops.append(self.created)
+			self.created = self.created.x
+		else:
+			self.created = False
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1])
 
@@ -146,24 +164,36 @@ def collision(ball_center, catcher_point):
 	else:
 		return False
 
-class ClientConnection(Protocol):
-	def __init__(self):
-		self.gs = None
+class ServerConnection(Protocol):
+	def __init__(self, addr, client):
+		self.addr = addr
+		self.client = client
+#		self.gs = GameSpace()
 	def dataReceived(self, data):
-		print 'game received from client'
-		big = zlib.decompress(data)
-		self.gs = pickle.loads(big)
-		print 'game initialized'
-		self.gs.main()
-	def connectionMade(self):
-		self.transport.write('player 2 connected')
+		print 'received data: ' + data
+		if data == 'player 2 connected':
+			self.client.connected = True	
+		print "connection made"
+
 	def connectionLost(self, reason):
-		print 'lost connection to ' + SERVER_HOST + ' port ' + str(SERVER_PORT)
+		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
+	def write(self, data):
+		self.transport.write(data)
+class ServerConnFactory(Factory):
+	def __init__(self, client):
+		self.client = client
 
-class ClientConnFactory(ClientFactory):
 	def buildProtocol(self, addr):
-		return ClientConnection()
+		proto = ServerConnection(addr, self.client)
+		self.client.write = proto.write
+		return proto
 
-reactor.connectTCP(SERVER_HOST, SERVER_PORT, ClientConnFactory())
-reactor.run()
+
+if __name__ == '__main__':
+	gs = GameSpace()
+	lc = LoopingCall(gs.game_loop)
+	lc.start(1/60)
+	reactor.listenTCP(SERVER_PORT, ServerConnFactory(gs))
+	reactor.run()
+	lc.stop()
