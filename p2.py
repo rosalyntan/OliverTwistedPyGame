@@ -57,6 +57,7 @@ class GameSpace:
 					self.rain.drops.remove(guy)
 					self.player2.lasers.remove(bullet)
 					self.score2+=1
+					break
 
 		#4. clock tick regulation (framerate)
 		self.clock.tick(60)
@@ -172,7 +173,6 @@ class Player2(pygame.sprite.Sprite):
 		for guy in self.lasers:
 			if guy.rect.center[0] < -20 or guy.rect.center[0] > 660:
 				self.lasers.remove(guy)	
-				print "MOTHERFUCKER"
 			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
 				self.lasers.remove(guy)
 		#this conditional prevents movement while firing
