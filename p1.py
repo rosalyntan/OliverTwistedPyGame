@@ -38,6 +38,7 @@ class GameSpace:
 		self.clock = pygame.time.Clock()
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
+		self.player2 = Player2(self)
 
 		#these lines set up the background image, could be done later and could be done in a function
 		self.bg = pygame.image.load("media/"+mode['background_image'])
@@ -82,6 +83,7 @@ class GameSpace:
 			#6. send a tick to every game object
 			self.rain.tick()
 			self.player1.tick()
+			self.player2.tick()
 			if self.acked:
 				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 			self.acked = True
@@ -90,13 +92,14 @@ class GameSpace:
 			self.screen.blit(self.bg, (0,0))
 			#player
 			self.screen.blit(self.player1.image, self.player1.rect)
+			self.screen.blit(self.player2.image, self.player2.rect)
 			#text & text display, could be done in a function
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
 			#player box
-			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
+			self.screen.blit(self.player1.box.image, self.player1.box.rect)
 			#coins/balls/whatever
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
@@ -169,7 +172,52 @@ class Box(pygame.sprite.Sprite):
 		self.y = center[1]+mode['box_offset'][1]
 		self.rect.center = [self.x,self.y]
 
+class Player2(pygame.sprite.Sprite):
 
+	def __init__(self, gs=None):
+		pygame.sprite.Sprite.__init__(self)
+		self.realx = 1
+		self.realy = 1
+		self.gs = gs
+		self.image = pygame.image.load("media/canon2.jpg")
+		self.rect = self.image.get_rect()
+		self.rect.center = (600, 205)
+#		self.lasers = []
+		self.angle = 0
+		#keep original image to limit resize errors
+		self.orig_image = self.image
+
+		#if I can fire laser beams, this flag will say whether I should be firing them right now
+		self.tofire = False
+
+	def tick(self):
+		#get the mouse x and y position on the screen
+#		mx, my = pygame.mouse.get_pos()
+
+#		for guy in self.lasers:
+#			if guy.rect.center[0] < -20 or guy.rect.center[0] > 660:
+#				self.lasers.remove(guy)	
+#			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
+#				self.lasers.remove(guy)
+		#this conditional prevents movement while firing
+		if self.tofire == True:
+			pass
+#			self.realx=mx
+#			self.realy=my
+	
+			#code to emit a laser beam block
+#			xSlope = self.realx-self.rect.center[0]
+#			ySlope = self.realy-self.rect.center[1]
+#			total = math.fabs(xSlope)+math.fabs(ySlope)
+#			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
+#			self.tofire = False
+		else:	
+			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
+#			self.angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
+			#self.image = rot_center(self.orig_image, angle)	
+			self.image = pygame.transform.rotate(self.orig_image, self.angle)
+			self.rect = self.image.get_rect(center = self.rect.center)
+			self.tofire = False
 
 #returns distance from one point to another
 def dist(x1, y1, x2, y2):
@@ -188,11 +236,16 @@ class ServerConnection(Protocol):
 		self.addr = addr
 		self.client = client #given a reference to GameSpace!
 	def dataReceived(self, data):
-		print 'received data: ' + data
+#		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True
 			self.transport.write('player 1 ready')
-		print "connection made"
+		else:
+			data = pickle.loads(data)
+#			print data
+			self.client.player2.angle = data[0]
+			self.client.player2.tofire = data[1]
+#		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
 	def connectionLost(self, reason):

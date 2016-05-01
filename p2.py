@@ -87,7 +87,7 @@ class GameSpace:
 #					self.player2.lasers.remove(laser)
 			if self.acked == 1:
 #				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
-				self.write(pickle.dumps([self.player2.rect.center]))
+				self.write(pickle.dumps([self.player2.angle, self.player2.tofire]))
 			self.acked = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
@@ -179,6 +179,7 @@ class Player2(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.center = (600, 205)
 		self.lasers = []
+		self.angle = 0
 		#keep original image to limit resize errors
 		self.orig_image = self.image
 
@@ -207,9 +208,9 @@ class Player2(pygame.sprite.Sprite):
 			self.tofire = False
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
+			self.angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
 			#self.image = rot_center(self.orig_image, angle)	
-			self.image = pygame.transform.rotate(self.orig_image, angle)
+			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = False
 
