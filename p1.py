@@ -77,14 +77,14 @@ class GameSpace:
 				self.keyspressed -=1
 				if self.keyspressed ==0:
 					self.player1.Moving = "N"
-		if self.connected and self.acked: #p2 has connected to p1
+		if self.connected: #p2 has connected to p1
 
 			#6. send a tick to every game object
 			self.rain.tick()
 			self.player1.tick()
-
-			self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
-
+			if self.acked:
+				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+			self.acked = True
 			#7. finally, display game object
 			#background image
 			self.screen.blit(self.bg, (0,0))
@@ -103,6 +103,7 @@ class GameSpace:
 			pygame.display.flip()
 		else: #if p2 has not connected yet
 			self.screen.fill((0,0,0))
+			
 			lt = pygame.font.Font('freesansbold.ttf',30)
 			textSurf = lt.render("Waiting for p2 to connect...", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
@@ -191,7 +192,6 @@ class ServerConnection(Protocol):
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True
 			self.transport.write('player 1 ready')
-			self.client.acked = True
 		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
