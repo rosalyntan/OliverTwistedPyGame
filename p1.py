@@ -3,7 +3,7 @@
 # client game window only opens after server game window closes
 # issue possibly stemming from the loop within the game state--data doesn't get transfered over to client until after server game loop ends. however, main for the server is called the data is sent to the client so idk
 
-from modes import otwist, bball, pirates
+from modes import sesame, otwist, bball, pirates
 
 import os
 import sys

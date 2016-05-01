@@ -1,6 +1,6 @@
 # Rosalyn Tan, Nancy McNamara
 
-from modes import pirates, bball, otwist
+from modes import sesame, pirates, bball, otwist
 
 import os
 import sys
