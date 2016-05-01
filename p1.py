@@ -187,7 +187,8 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
-			self.client.connected = True	
+			self.client.connected = True
+			self.transport.write('player 1 ready')	
 		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
