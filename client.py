@@ -190,5 +190,7 @@ class ClientConnFactory(ClientFactory):
 	def buildProtocol(self, addr):
 		return ClientConnection()
 
+if __name__ == '__main__':
+	c = 
 reactor.connectTCP(SERVER_HOST, SERVER_PORT, ClientConnFactory())
 reactor.run()

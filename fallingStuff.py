@@ -8,7 +8,7 @@ from pygame.locals import *
 import random
 from modes import pirates, otwist, bball
 
-mode = otwist
+mode = bball
 
 class GameSpace:
 	def main(self):
