@@ -1,6 +1,6 @@
 THINGS WE NEED TO DO:
 -fix intro menu
--figure out the coin error
+DONE figure out the coin error
 -make p2 wait for acknowledgment
 -make coins disappear on both ends
 -make them run at the same time
