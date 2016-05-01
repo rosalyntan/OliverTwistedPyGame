@@ -46,7 +46,7 @@ class GameSpace:
 		self.score1 = 0
 		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
 		self.connected = False #determines whether p2 has connected and game can start
-
+		self.acked = False
 		self.quit = 0
 	def game_loop(self):
 
@@ -77,7 +77,7 @@ class GameSpace:
 				self.keyspressed -=1
 				if self.keyspressed ==0:
 					self.player1.Moving = "N"
-		if self.connected: #p2 has connected to p1
+		if self.connected and self.acked: #p2 has connected to p1
 
 			#6. send a tick to every game object
 			self.rain.tick()
@@ -103,8 +103,8 @@ class GameSpace:
 			pygame.display.flip()
 		else: #if p2 has not connected yet
 			self.screen.fill((0,0,0))
-			lt = pygame.font.Font('freesansbold.ttf',115)
-			textSurf = lt.render("BUTTONS", True, (5, 100, 5))
+			lt = pygame.font.Font('freesansbold.ttf',30)
+			textSurf = lt.render("Waiting for p2 to connect...", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
 			pygame.display.flip()
@@ -168,6 +168,8 @@ class Box(pygame.sprite.Sprite):
 		self.y = center[1]+mode['box_offset'][1]
 		self.rect.center = [self.x,self.y]
 
+
+
 #returns distance from one point to another
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
@@ -188,7 +190,8 @@ class ServerConnection(Protocol):
 		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True
-			self.transport.write('player 1 ready')	
+			self.transport.write('player 1 ready')
+			self.client.acked = True
 		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
