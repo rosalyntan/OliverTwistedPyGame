@@ -39,21 +39,24 @@ class GameSpace:
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 
+		#these lines set up the background image, could be done later and could be done in a function
 		self.bg = pygame.image.load("media/"+mode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, mode['background_scale'])
 		#random variables in GameSpace
 		self.score1 = 0
-		self.keyspressed = 0
-		self.connected = False
+		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
+		self.connected = False #determines whether p2 has connected and game can start
+
 	def game_loop(self):
 
-	#		mx, my = pygame.mouse.get_pos()
+	#	mx, my = pygame.mouse.get_pos()
 
-
+		#check for collisons between player box and coins, removes coins and increments score
 		for guy in self.rain.drops:
 			if collision(guy.rect.center, [self.player1.rect.center[0]+mode['catcher_offset'][0], self.player1.rect.center[1]+mode['catcher_offset'][1]]):
 				self.rain.drops.remove(guy)
 				self.score1+=1
+
 		#4. clock tick regulation (framerate)
 		self.clock.tick(60)
 			
@@ -62,55 +65,63 @@ class GameSpace:
 			if event.type == pygame.QUIT:
 				pygame.quit()
 			if event.type == KEYDOWN:
-				if event.key == 275:
+				if event.key == 275: #right arrow
 					self.player1.Moving = "R" 
-				elif event.key == 276:
+				elif event.key == 276: #left arrow
 					self.player1.Moving = "L"
-				self.keyspressed +=1
+				self.keyspressed +=1 
 			if event.type == KEYUP:
 				self.keyspressed -=1
 				if self.keyspressed ==0:
 					self.player1.Moving = "N"
-		if self.connected:
+		if self.connected: #p2 has connected to p1
+
 			#6. send a tick to every game object
 			self.rain.tick()
 			self.player1.tick()
-			self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1]))
+
+			self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+
 			#7. finally, display game object
+			#background image
 			self.screen.blit(self.bg, (0,0))
+			#player
 			self.screen.blit(self.player1.image, self.player1.rect)
+			#text & text display, could be done in a function
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
+			#player box
 			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
+			#coins/balls/whatever
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
-		else:
+		else: #if p2 has not connected yet
 			self.screen.fill((0,0,0))
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render("BUTTONS", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
 			pygame.display.flip()
-	def write(self,data):
+	def write(self,data): #dummy function so that we can use parent connection's write function
 		pass
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
 		self.drops = []
 		self.created = False
-	def tick(self):
+	def tick(self): #create new falling item ~10% of the time
 		create = random.randint(1,10)
 		if create==8:
 			self.created = Raindrops(self.gs)
 			self.drops.append(self.created)
-			self.created = self.created.x
+			self.created = self.created.x #sent to p2
 		else:
-			self.created = False
+			self.created = False #sent to p2
 		for guy in self.drops:
-			guy.rect = guy.rect.move([0,1])
+			guy.rect = guy.rect.move([0,1]) #all coins down 1 pixel
 
 class Raindrops(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
@@ -118,8 +129,8 @@ class Raindrops(pygame.sprite.Sprite):
 		self.gs = gs
 		self.image = pygame.image.load("media/"+mode['ball_image'])
 		self.rect = self.image.get_rect()
-		self.x = random.randint(30,610)
-		self.rect.center = [self.x,-25]
+		self.x = random.randint(30,610) #random x position for item
+		self.rect.center = [self.x,-25] #starts above window
 
 class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
@@ -129,7 +140,7 @@ class Player1(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.center = mode['player_start']
 		self.Moving = "N"
-		self.box = Box(self.rect.center, self.gs)
+		self.box = Box(self.rect.center, self.gs) #player's catching receptacle
 	def tick(self):
 		if self.Moving == "R":
 			self.rect = self.rect.move([5,0])
@@ -137,10 +148,10 @@ class Player1(pygame.sprite.Sprite):
 		elif self.Moving == "L":
 			self.rect = self.rect.move([-5,0])
 			self.box.rect = self.box.rect.move([-5,0])
-		if self.rect.center[0]<mode['max_player_left']:
+		if self.rect.center[0]<mode['max_player_left']: #can't move left anymore, put player & box at maximum left position
 			self.rect.center = [mode['max_player_left'], self.rect.center[1]]
 			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
-		elif self.rect.center[0]>mode['max_player_right']:
+		elif self.rect.center[0]>mode['max_player_right']: #same as above for right
 			self.rect.center = [mode['max_player_right'], self.rect.center[1]]
 			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
 
@@ -154,9 +165,11 @@ class Box(pygame.sprite.Sprite):
 		self.y = center[1]+mode['box_offset'][1]
 		self.rect.center = [self.x,self.y]
 
+#returns distance from one point to another
 def dist(x1, y1, x2, y2):
 	return ((y2-y1)**2+(x2-x1)**2)**.5
 
+#returns whether two points are within 25 pixels of each other (radius of falling items)
 def collision(ball_center, catcher_point):
 	distance = dist(ball_center[0], ball_center[1], catcher_point[0], catcher_point[1]) 
 	if distance<=25:
@@ -167,29 +180,28 @@ def collision(ball_center, catcher_point):
 class ServerConnection(Protocol):
 	def __init__(self, addr, client):
 		self.addr = addr
-		self.client = client
-#		self.gs = GameSpace()
+		self.client = client #given a reference to GameSpace!
 	def dataReceived(self, data):
 		print 'received data: ' + data
-		if data == 'player 2 connected':
+		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True	
 		print "connection made"
-
 	def connectionLost(self, reason):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
-	def write(self, data):
+	def write(self, data): #write function used in GameSpace
 		self.transport.write(data)
+
 class ServerConnFactory(Factory):
 	def __init__(self, client):
-		self.client = client
-
+		self.client = client #given reference to GameSpace
 	def buildProtocol(self, addr):
 		proto = ServerConnection(addr, self.client)
-		self.client.write = proto.write
+		self.client.write = proto.write #sets write function in GameSpace to connection's write function
 		return proto
 
 
+#I DON'T REALLY KNOW WHAT THIS DOES BUT IT WAS GIVEN IN CLASS???
 if __name__ == '__main__':
 	gs = GameSpace()
 	lc = LoopingCall(gs.game_loop)
