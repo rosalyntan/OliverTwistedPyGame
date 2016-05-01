@@ -45,6 +45,9 @@ class GameSpace:
 
 		self.quit = 0
 		self.ready = 0
+		self.acked = 0
+		
+#		random.seed()
 
 		#3. start game loop
 
@@ -82,6 +85,10 @@ class GameSpace:
 			for laser in self.player2.lasers:
 				laser.tick()
 #					self.player2.lasers.remove(laser)
+			if self.acked == 1:
+#				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
+				self.write(pickle.dumps([self.player2.rect.center]))
+			self.acked = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
 			self.screen.blit(self.player1.image, self.player1.rect)
@@ -96,13 +103,16 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
-		else:
-			self.screen.fill((0, 0, 0))
-			lt = pygame.font.Font('freesansbold.ttf', 115)
-			textSurf = lt.render("BUTTONS", True, (5, 100, 5))
+		else:	
+			self.screen.blit(self.bg, (0, 0))
+#			self.screen.fill((0, 0, 0))
+			lt = pygame.font.Font('freesansbold.ttf', 50)
+			textSurf = lt.render("Waiting for Player 1", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
-			pygame.display.flip()	
+			pygame.display.flip()
+	def write(self, data): # dummy function
+		pass
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -233,12 +243,10 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
-#		print 'data ' + data
 		if data == 'player 1 ready':
-			print 'string' + data
+#			print 'string' + data
 			self.client.ready = 1
 		else:
-#			print 'not ready ' + data
 			data =  pickle.loads(data)
 			self.client.player1.rect.center = data[0]
 			self.client.player1.box.rect.center = data[1]
@@ -250,12 +258,16 @@ class ClientConnection(Protocol):
 	def connectionLost(self, reason):
 		print 'lost connection to ' + SERVER_HOST + ' port ' + str(SERVER_PORT)
 		reactor.stop()
+	def write(self, data):
+		self.transport.write(data)
 
 class ClientConnFactory(ClientFactory):
 	def __init__(self, client):
 		self.client = client
 	def buildProtocol(self, addr):
-		return ClientConnection(self.client)
+		proto = ClientConnection(self.client)
+		self.client.write = proto.write # sets write function in GameSpace to connection's write function
+		return proto
 
 
 if __name__ == '__main__':
