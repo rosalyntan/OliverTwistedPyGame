@@ -47,6 +47,7 @@ class GameSpace:
 		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
 		self.connected = False #determines whether p2 has connected and game can start
 
+		self.quit = 0
 	def game_loop(self):
 
 	#	mx, my = pygame.mouse.get_pos()
@@ -63,7 +64,9 @@ class GameSpace:
 		#5. handle user inputs
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				pygame.quit()
+#				pygame.quit()
+#				sys.exit()
+				self.quit = 1
 			if event.type == KEYDOWN:
 				if event.key == 275: #right arrow
 					self.player1.Moving = "R" 
@@ -186,6 +189,8 @@ class ServerConnection(Protocol):
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True	
 		print "connection made"
+		if self.client.quit == 1:
+			self.transport.loseConnection()
 	def connectionLost(self, reason):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()

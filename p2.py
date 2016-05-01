@@ -43,6 +43,8 @@ class GameSpace:
 		self.score2 = 0
 		self.keyspressed = 0
 
+		self.quit = 0
+
 		#3. start game loop
 
 	def game_loop(self):
@@ -62,7 +64,9 @@ class GameSpace:
 		#5. handle user inputs
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				pygame.quit()
+		#		pygame.quit()
+		#		sys.exit()
+				self.quit = 1
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				self.player2.tofire = True
 			if event.type == pygame.MOUSEBUTTONUP:
@@ -224,6 +228,8 @@ class ClientConnection(Protocol):
 		self.client.player1.rect.center = data[0]
 		self.client.player1.box.rect.center = data[1]
 		self.client.rain.addNew = data[2]
+		if self.client.quit == 1:
+			self.transport.loseConnection()
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):
