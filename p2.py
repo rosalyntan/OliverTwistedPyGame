@@ -44,6 +44,7 @@ class GameSpace:
 		self.keyspressed = 0
 
 		self.quit = 0
+		self.ready = 0
 
 		#3. start game loop
 
@@ -74,26 +75,34 @@ class GameSpace:
 				self.player2.tofire = False
 
 		#6. send a tick to every game object
-		self.rain.tick()
-		self.player1.tick()
-		self.player2.tick()
-		for laser in self.player2.lasers:
-			laser.tick()
-#				self.player2.lasers.remove(laser)
-		#7. finally, display game object
-		self.screen.blit(self.bg, (0,0))
-		self.screen.blit(self.player1.image, self.player1.rect)
-		for laser in self.player2.lasers:
-			self.screen.blit(laser.image, laser.rect)
-		self.screen.blit(self.player2.image, self.player2.rect)
-		lt = pygame.font.Font('freesansbold.ttf',115)
-		textSurf = lt.render(str(self.score2), True, (100, 100, 100))
-		TextRect = textSurf.get_rect()
-		self.screen.blit(textSurf, TextRect)
-		self.screen.blit(self.player1.box.image, self.player1.box.rect)	
-		for guy in self.rain.drops:
-			self.screen.blit(guy.image, guy.rect)
-		pygame.display.flip()
+		if self.ready == 1:
+			self.rain.tick()
+			self.player1.tick()
+			self.player2.tick()
+			for laser in self.player2.lasers:
+				laser.tick()
+#					self.player2.lasers.remove(laser)
+			#7. finally, display game object
+			self.screen.blit(self.bg, (0,0))
+			self.screen.blit(self.player1.image, self.player1.rect)
+			for laser in self.player2.lasers:
+				self.screen.blit(laser.image, laser.rect)
+			self.screen.blit(self.player2.image, self.player2.rect)
+			lt = pygame.font.Font('freesansbold.ttf',115)
+			textSurf = lt.render(str(self.score2), True, (100, 100, 100))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
+			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
+			for guy in self.rain.drops:
+				self.screen.blit(guy.image, guy.rect)
+			pygame.display.flip()
+		else:
+			self.screen.fill((0, 0, 0))
+			lt = pygame.font.Font('freesansbold.ttf', 115)
+			textSurf = lt.render("BUTTONS", True, (5, 100, 5))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
+			pygame.display.flip()	
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -224,10 +233,13 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
-		data =  pickle.loads(data)
-		self.client.player1.rect.center = data[0]
-		self.client.player1.box.rect.center = data[1]
-		self.client.rain.addNew = data[2]
+		if data == 'player 1 ready':
+			self.ready = 1
+		else:
+			data =  pickle.loads(data)
+			self.client.player1.rect.center = data[0]
+			self.client.player1.box.rect.center = data[1]
+			self.client.rain.addNew = data[2]
 		if self.client.quit == 1:
 			self.transport.loseConnection()
 	def connectionMade(self):
