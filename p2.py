@@ -73,9 +73,9 @@ class GameSpace:
 		#		sys.exit()
 				self.quit = 1
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				self.player2.tofire = True
+				self.player2.tofire = 1
 			if event.type == pygame.MOUSEBUTTONUP:
-				self.player2.tofire = False
+				self.player2.tofire = 0
 
 		#6. send a tick to every game object
 		if self.ready == 1:
@@ -87,7 +87,9 @@ class GameSpace:
 #					self.player2.lasers.remove(laser)
 			if self.acked == 1:
 #				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
-				self.write(pickle.dumps([self.player2.angle, self.player2.tofire]))
+				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.player2.fired]))
+#				self.player2.tofire = 1-self.player2.tofire
+				self.player2.fired = 0
 			self.acked = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
@@ -184,11 +186,12 @@ class Player2(pygame.sprite.Sprite):
 		self.orig_image = self.image
 
 		#if I can fire laser beams, this flag will say whether I should be firing them right now
-		self.tofire = False
+		self.tofire = 0
+		self.fired = 0
 
 	def tick(self):
 		#get the mouse x and y position on the screen
-		mx, my = pygame.mouse.get_pos()
+		self.mx, self.my = pygame.mouse.get_pos()
 
 		for guy in self.lasers:
 			if guy.rect.center[0] < -20 or guy.rect.center[0] > 660:
@@ -196,23 +199,24 @@ class Player2(pygame.sprite.Sprite):
 			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
 				self.lasers.remove(guy)
 		#this conditional prevents movement while firing
-		if self.tofire == True:
-			self.realx=mx
-			self.realy=my
+		if self.tofire == 1:
+			self.realx=self.mx
+			self.realy=self.my
 	
 			#code to emit a laser beam block
 			xSlope = self.realx-self.rect.center[0]
 			ySlope = self.realy-self.rect.center[1]
 			total = math.fabs(xSlope)+math.fabs(ySlope)
 			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
-			self.tofire = False
+			self.tofire = 0
+			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5
 			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
-			self.tofire = False
+			self.tofire = 0
 
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, gs=None, xc=320, yc=240, xm=1, ym=1):
