@@ -43,6 +43,12 @@ class GameSpace:
 		self.score2 = 0
 		self.keyspressed = 0
 
+		self.quit = 0
+		self.ready = 0
+		self.acked = 0
+		
+#		random.seed()
+
 		#3. start game loop
 
 	def game_loop(self):
@@ -55,6 +61,7 @@ class GameSpace:
 					self.rain.drops.remove(guy)
 					self.player2.lasers.remove(bullet)
 					self.score2+=1
+					break
 
 		#4. clock tick regulation (framerate)
 		self.clock.tick(60)
@@ -62,33 +69,52 @@ class GameSpace:
 		#5. handle user inputs
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				pygame.quit()
+		#		pygame.quit()
+		#		sys.exit()
+				self.quit = 1
 			if event.type == pygame.MOUSEBUTTONDOWN:
-				self.player2.tofire = True
+				self.player2.tofire = 1
 			if event.type == pygame.MOUSEBUTTONUP:
-				self.player2.tofire = False
+				self.player2.tofire = 0
 
 		#6. send a tick to every game object
-		self.rain.tick()
-		self.player1.tick()
-		self.player2.tick()
-		for laser in self.player2.lasers:
-			laser.tick()
-#				self.player2.lasers.remove(laser)
-		#7. finally, display game object
-		self.screen.blit(self.bg, (0,0))
-		self.screen.blit(self.player1.image, self.player1.rect)
-		for laser in self.player2.lasers:
-			self.screen.blit(laser.image, laser.rect)
-		self.screen.blit(self.player2.image, self.player2.rect)
-		lt = pygame.font.Font('freesansbold.ttf',115)
-		textSurf = lt.render(str(self.score2), True, (100, 100, 100))
-		TextRect = textSurf.get_rect()
-		self.screen.blit(textSurf, TextRect)
-		self.screen.blit(self.player1.box.image, self.player1.box.rect)	
-		for guy in self.rain.drops:
-			self.screen.blit(guy.image, guy.rect)
-		pygame.display.flip()
+		if self.ready == 1:
+			self.rain.tick()
+			self.player1.tick()
+			self.player2.tick()
+			for laser in self.player2.lasers:
+				laser.tick()
+#					self.player2.lasers.remove(laser)
+			if self.acked == 1:
+#				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
+				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.player2.fired]))
+#				self.player2.tofire = 1-self.player2.tofire
+				self.player2.fired = 0
+			self.acked = 1
+			#7. finally, display game object
+			self.screen.blit(self.bg, (0,0))
+			self.screen.blit(self.player1.image, self.player1.rect)
+			for laser in self.player2.lasers:
+				self.screen.blit(laser.image, laser.rect)
+			self.screen.blit(self.player2.image, self.player2.rect)
+			lt = pygame.font.Font('freesansbold.ttf',115)
+			textSurf = lt.render(str(self.score2), True, (100, 100, 100))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
+			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
+			for guy in self.rain.drops:
+				self.screen.blit(guy.image, guy.rect)
+			pygame.display.flip()
+		else:	
+			self.screen.blit(self.bg, (0, 0))
+#			self.screen.fill((0, 0, 0))
+			lt = pygame.font.Font('freesansbold.ttf', 50)
+			textSurf = lt.render("Waiting for Player 1", True, (5, 100, 5))
+			TextRect = textSurf.get_rect()
+			self.screen.blit(textSurf, TextRect)
+			pygame.display.flip()
+	def write(self, data): # dummy function
+		pass
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -155,40 +181,42 @@ class Player2(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.rect.center = (600, 205)
 		self.lasers = []
+		self.angle = 0
 		#keep original image to limit resize errors
 		self.orig_image = self.image
 
 		#if I can fire laser beams, this flag will say whether I should be firing them right now
-		self.tofire = False
+		self.tofire = 0
+		self.fired = 0
 
 	def tick(self):
 		#get the mouse x and y position on the screen
-		mx, my = pygame.mouse.get_pos()
+		self.mx, self.my = pygame.mouse.get_pos()
 
 		for guy in self.lasers:
 			if guy.rect.center[0] < -20 or guy.rect.center[0] > 660:
 				self.lasers.remove(guy)	
-				print "MOTHERFUCKER"
 			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
 				self.lasers.remove(guy)
 		#this conditional prevents movement while firing
-		if self.tofire == True:
-			self.realx=mx
-			self.realy=my
+		if self.tofire == 1:
+			self.realx=self.mx
+			self.realy=self.my
 	
 			#code to emit a laser beam block
 			xSlope = self.realx-self.rect.center[0]
 			ySlope = self.realy-self.rect.center[1]
 			total = math.fabs(xSlope)+math.fabs(ySlope)
 			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
-			self.tofire = False
+			self.tofire = 0
+			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			angle = math.atan2(my-self.rect.center[1],mx-self.rect.center[0])*-180/math.pi+211.5
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5
 			#self.image = rot_center(self.orig_image, angle)	
-			self.image = pygame.transform.rotate(self.orig_image, angle)
+			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
-			self.tofire = False
+			self.tofire = 0
 
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, gs=None, xc=320, yc=240, xm=1, ym=1):
@@ -220,21 +248,31 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
-		data =  pickle.loads(data)
-		self.client.player1.rect.center = data[0]
-		self.client.player1.box.rect.center = data[1]
-		self.client.rain.addNew = data[2]
+		if data == 'player 1 ready':
+#			print 'string' + data
+			self.client.ready = 1
+		else:
+			data =  pickle.loads(data)
+			self.client.player1.rect.center = data[0]
+			self.client.player1.box.rect.center = data[1]
+			self.client.rain.addNew = data[2]
+		if self.client.quit == 1:
+			self.transport.loseConnection()
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):
 		print 'lost connection to ' + SERVER_HOST + ' port ' + str(SERVER_PORT)
 		reactor.stop()
+	def write(self, data):
+		self.transport.write(data)
 
 class ClientConnFactory(ClientFactory):
 	def __init__(self, client):
 		self.client = client
 	def buildProtocol(self, addr):
-		return ClientConnection(self.client)
+		proto = ClientConnection(self.client)
+		self.client.write = proto.write # sets write function in GameSpace to connection's write function
+		return proto
 
 
 if __name__ == '__main__':
