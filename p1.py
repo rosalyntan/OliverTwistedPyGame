@@ -20,7 +20,7 @@ from pygame.locals import *
 
 SERVER_PORT = 40041
 
-mode = pirates
+mode = sesame
 
 class GameSpace:
 	def __init__(self):
@@ -36,6 +36,7 @@ class GameSpace:
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
+		self.p2body = Player2Prop(self)
 
 		#these lines set up the background image, could be done later and could be done in a function
 		self.bg = pygame.image.load("media/"+mode['background_image'])
@@ -96,6 +97,8 @@ class GameSpace:
 			#7. finally, display game object
 			#background image
 			self.screen.blit(self.bg, (0,0))
+
+			self.screen.blit(self.p2body.image, self.p2body.rect)
 			#player
 			self.screen.blit(self.player1.image, self.player1.rect)
 			for laser in self.player2.lasers:
@@ -129,7 +132,7 @@ class Rain(pygame.sprite.Sprite):
 		self.drops = []
 		self.created = False
 	def tick(self): #create new falling item ~10% of the time
-		create = random.randint(1,10)
+		create = random.randint(1,400)
 		if create==8:
 			self.created = Raindrops(self.gs)
 			self.drops.append(self.created)
@@ -147,6 +150,13 @@ class Raindrops(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect()
 		self.x = random.randint(30,610) #random x position for item
 		self.rect.center = [self.x,-25] #starts above window
+
+class Player2Prop(pygame.sprite.Sprite):
+	def __init__(self, gs=None):
+		self.gs = gs
+		self.image = pygame.image.load("media/"+mode['shooter_body'])
+		self.rect = self.image.get_rect()
+		self.center = mode['sb_location']
 
 class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
@@ -190,9 +200,9 @@ class Player2(pygame.sprite.Sprite):
 		self.mx = 1
 		self.my = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/canon2.jpg")
+		self.image = pygame.image.load("media/"+mode["gun_image"])
 		self.rect = self.image.get_rect()
-		self.rect.center = (600, 205)
+		self.rect.center = mode['gun_location']
 		self.lasers = []
 		self.angle = 0
 		#keep original image to limit resize errors
@@ -238,7 +248,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/cannonball.png")
+		self.image = pygame.image.load("media/"+mode['bullet_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 

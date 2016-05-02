@@ -20,7 +20,7 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-mode = pirates
+mode = sesame
 
 class GameSpace:
 	def __init__(self):
@@ -123,7 +123,6 @@ class Rain(pygame.sprite.Sprite):
 		self.drops = []
 	def tick(self):
 		if self.addNew:
-			#print "HELLO\n\n\n\n\n", self.addNew
 			self.drops.append(Raindrops(self.addNew, self.gs))
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1])
@@ -177,7 +176,7 @@ class Player2(pygame.sprite.Sprite):
 		self.realx = 1
 		self.realy = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/canon2.jpg")
+		self.image = pygame.image.load("media/"+mode["gun_image"])
 		self.rect = self.image.get_rect()
 		self.rect.center = (600, 205)
 		self.lasers = []
@@ -206,8 +205,12 @@ class Player2(pygame.sprite.Sprite):
 			#code to emit a laser beam block
 			xSlope = self.realx-self.rect.center[0]
 			ySlope = self.realy-self.rect.center[1]
+			slope = ySlope/xSlope
+			cosine = 1/(1+(slope)**2)**.5
+			startx = 600-1/(1+slope**2)**.5*92
+			starty = 205-slope/(1+slope**2)**.5
 			total = math.fabs(xSlope)+math.fabs(ySlope)
-			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
+			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
 			self.tofire = 0
 			self.fired = 1
 		else:	
@@ -226,7 +229,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/cannonball.png")
+		self.image = pygame.image.load("media/"+mode['bullet_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 
