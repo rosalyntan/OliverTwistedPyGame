@@ -20,7 +20,7 @@ from pygame.locals import *
 
 SERVER_PORT = 40041
 
-mode = sesame
+mode = bball
 
 class GameSpace:
 	def __init__(self):
@@ -156,7 +156,7 @@ class Player2Prop(pygame.sprite.Sprite):
 		self.gs = gs
 		self.image = pygame.image.load("media/"+mode['shooter_body'])
 		self.rect = self.image.get_rect()
-		self.center = mode['sb_location']
+		self.rect.center = mode['sb_location']
 
 class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):

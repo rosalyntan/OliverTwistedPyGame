@@ -20,7 +20,7 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-mode = sesame
+mode = bball
 
 class GameSpace:
 	def __init__(self):
@@ -178,7 +178,8 @@ class Player2(pygame.sprite.Sprite):
 		self.gs = gs
 		self.image = pygame.image.load("media/"+mode["gun_image"])
 		self.rect = self.image.get_rect()
-		self.rect.center = (600, 205)
+		self.rect.center = mode['gun_location']
+#		self.rect.center = (600, 205)
 		self.lasers = []
 		self.angle = 0
 		#keep original image to limit resize errors
@@ -210,7 +211,8 @@ class Player2(pygame.sprite.Sprite):
 			startx = 600-1/(1+slope**2)**.5*92
 			starty = 205-slope/(1+slope**2)**.5
 			total = math.fabs(xSlope)+math.fabs(ySlope)
-			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
+			self.lasers.append(Laser(self, self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total))
+#			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
 			self.tofire = 0
 			self.fired = 1
 		else:	
