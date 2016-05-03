@@ -39,13 +39,13 @@ class GameSpace:
 
 		#random variables in GameSpace
 		self.score1 = 0
-		self.moded = False
 		self.ready = False
 		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
 		self.connected = False #determines whether p2 has connected and game can start
 		self.acked = False
 		self.quit = 0
 		self.mode = None
+		self.waitingString = "Waiting for p2 to connect..."
 		
 	def setup(self):
 		self.rain = Rain(self)
@@ -56,7 +56,7 @@ class GameSpace:
 		self.bg = pygame.transform.scale(self.bg, self.mode['background_scale'])
 
 	def game_loop(self):
-		if self.connected and self.moded:
+		if self.connected and self.mode==True:
 			for bullet in self.player2.lasers:
 				for guy in self.rain.drops:
 					if collision(guy.rect.center, bullet.rect.center):
@@ -119,7 +119,7 @@ class GameSpace:
 			TextRect = textSurf.get_rect()
 			self.screen.blit(textSurf, TextRect)
 			#player box
-			self.screen.blit(self.player1.box.image, 	self.player1.box.rect)
+			self.screen.blit(self.player1.box.image, self.player1.box.rect)
 			#coins/balls/whatever
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
@@ -157,6 +157,13 @@ class Menu(pygame.sprite.Sprite):
 		textSurf = lt.render("Choose a mode!", True, (255, 255, 255))
 		textRect = textSurf.get_rect()
 		self.gs.screen.blit(textSurf, textRect)
+
+		message = pygame.font.Font('freesansbold.ttf', 30)
+		messSurf = message.render(self.gs.waitingString, True, (255, 255, 255))
+		messRect = messSurf.get_rect()
+		messRect.center = 500,400
+		self.gs.screen.blit(messSurf, messRect)
+
 		self.gs.screen.blit(self.pirateButton, self.pirateRect)
 		self.gs.screen.blit(self.bballButton, self.bballRect)
 		self.gs.screen.blit(self.otwistButton, self.otwistRect)
@@ -168,31 +175,27 @@ class Menu(pygame.sprite.Sprite):
 				if mx > self.pirateRect.centerx-25 and mx < self.pirateRect.centerx+25 and my > self.pirateRect.centery-25 and my < self.pirateRect.centery+25:
 					print 'clicked pirate'
 					self.gs.mode = pirates
-					self.gs.moded = True
 					self.gs.setup()
 					if self.gs.connected:
-						self.gs.write('player 1 ready')
+						self.gs.write('pirates')
 				elif mx > self.bballRect.centerx-25 and mx < self.bballRect.centerx+25 and my > self.bballRect.centery-25 and my < self.bballRect.centery+25:
 					print 'clicked bball'
 					self.gs.mode = bball
-					self.gs.moded = True
 					self.gs.setup()
 					if self.gs.connected:
-						self.gs.write('player 1 ready')
+						self.gs.write('bball')
 				elif mx > self.otwistRect.centerx-25 and mx < self.otwistRect.centerx+25 and my > self.otwistRect.centery-25 and my < self.otwistRect.centery+25:
 					print 'clicked otwist'
 					self.gs.mode = otwist
-					self.gs.moded = True
 					self.gs.setup()
 					if self.gs.connected:
-						self.gs.write('player 1 ready')
+						self.gs.write('otwist')
 				elif mx > self.sesameRect.centerx-25 and mx < self.sesameRect.centerx+25 and my > self.sesameRect.centery-25 and my < self.sesameRect.centery+25:
 					print 'clicked sesame'
 					self.gs.mode = sesame
-					self.gs.moded = True
 					self.gs.setup()
 					if self.gs.connected:
-						self.gs.write('player 1 ready')
+						self.gs.write('sesame')
 				
 
 class Rain(pygame.sprite.Sprite):
@@ -299,7 +302,7 @@ class Player2(pygame.sprite.Sprite):
 			xSlope = self.mx-self.rect.center[0]
 			ySlope = self.my-self.rect.center[1]
 			total = math.fabs(xSlope)+math.fabs(ySlope)
-			self.lasers.append(Laser(self,self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total))
+			self.lasers.append(Laser(self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total, self.gs))
 #			self.tofire = False
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
@@ -310,7 +313,7 @@ class Player2(pygame.sprite.Sprite):
 			self.tofire = 0
 
 class Laser(pygame.sprite.Sprite):
-	def __init__(self, gs=None, xc=320, yc=240, xm=1, ym=1):
+	def __init__(self,xc=320, yc=240, xm=1, ym=1, gs=None):
 		pygame.sprite.Sprite.__init__(self)
 		xc=xc+xm*32
 		yc=yc+ym*32
@@ -344,8 +347,9 @@ class ServerConnection(Protocol):
 #		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True
-			if self.client.moded == True:
-				self.transport.write('player 1 ready')
+			self.client.waitingString = "p2 connected!"
+			if self.client.mode != None:
+				self.transport.write(self.client.mode['name'])
 		else:
 			data = pickle.loads(data)
 #			print data[2]
@@ -359,6 +363,7 @@ class ServerConnection(Protocol):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
 	def write(self, data): #write function used in GameSpace
+		print "sending", data
 		self.transport.write(data)
 
 class ServerConnFactory(Factory):

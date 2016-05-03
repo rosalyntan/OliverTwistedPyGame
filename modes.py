@@ -14,7 +14,8 @@ sesame = dict([
 	('max_player_right',620),
 	('box_offset',[35,-100]),
 	('background_scale',[721,480]),
-	('catcher_offset',[35,-115])
+	('catcher_offset',[35,-115]),
+	('name', 'sesame')
 ])
 
 pirates = dict([
@@ -32,7 +33,8 @@ pirates = dict([
 	('max_player_right',620),
 	('box_offset',[-15,38]),
 	('background_scale',[854,480]),
-	('catcher_offset',[-10,40])
+	('catcher_offset',[-10,40]),
+	('name', 'pirates')
 ])
 
 otwist = dict([
@@ -51,7 +53,8 @@ otwist = dict([
 	('max_player_right',615),
 	('box_offset',[-15,35]),
 	('background_scale',[1067,480]),
-	('catcher_offset',[-10,32])
+	('catcher_offset',[-10,32]),
+	('name', 'otwist')
 ])
 
 
@@ -70,6 +73,9 @@ bball = dict([
 	('max_player_right',475),
 	('box_offset',[140,40]),
 	('background_scale',[854,480]),
-	('catcher_offset',[140,0])
+	('catcher_offset',[140,0]),
+	('name','bball')
 ])
+
+backgrounds = [sesame, pirates, otwist, bball]
 

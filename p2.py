@@ -1,6 +1,6 @@
 # Rosalyn Tan, Nancy McNamara
 
-from modes import sesame, pirates, bball, otwist
+from modes import backgrounds, sesame, pirates, bball, otwist
 
 import os
 import sys
@@ -20,7 +20,7 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-mode = otwist
+#mode = otwist
 
 class GameSpace:
 	def __init__(self):
@@ -33,53 +33,59 @@ class GameSpace:
 
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
+
+		#random variables in GameSpace
+		self.score2 = 0
+		self.keyspressed = 0
+		self.mode = None
+		self.quit = 0
+		self.ready = 0
+		self.acked = 0
+		tempMode = backgrounds[random.randint(0,3)]
+		self.bg = pygame.image.load("media/"+tempMode['background_image'])
+		self.bg = pygame.transform.scale(self.bg, tempMode['background_scale'])
+		
+#		random.seed()
+
+		#3. start game loop
+	def setup(self):
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
 		self.p2body = Player2Prop(self)
 
-		self.bg = pygame.image.load("media/"+mode['background_image'])
-		self.bg = pygame.transform.scale(self.bg, mode['background_scale'])
-		#random variables in GameSpace
-		self.score2 = 0
-		self.keyspressed = 0
-
-		self.quit = 0
-		self.ready = 0
-		self.acked = 0
-		
-#		random.seed()
-
-		#3. start game loop
+		self.bg = pygame.image.load("media/"+self.mode['background_image'])
+		self.bg = pygame.transform.scale(self.bg, self.mode['background_scale'])
 
 	def game_loop(self):
-		mx, my = pygame.mouse.get_pos()
+		if self.ready ==1:
+			mx, my = pygame.mouse.get_pos()
 
 
-		for bullet in self.player2.lasers:
-			for guy in self.rain.drops:
-				if collision(guy.rect.center, bullet.rect.center):
-					self.rain.drops.remove(guy)
-					self.player2.lasers.remove(bullet)
-					self.score2+=1
-					break
+			for bullet in self.player2.lasers:
+				for guy in self.rain.drops:
+					if collision(guy.rect.center, bullet.rect.center):
+						self.rain.drops.remove(guy)
+						self.player2.lasers.remove(bullet)
+						self.score2+=1
+						break
 
-		#4. clock tick regulation (framerate)
-		self.clock.tick(60)
-		
-		#5. handle user inputs
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-		#		pygame.quit()
-		#		sys.exit()
-				self.quit = 1
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				self.player2.tofire = 1
-			if event.type == pygame.MOUSEBUTTONUP:
-				self.player2.tofire = 0
+			#4. clock tick regulation (framerate)
+			self.clock.tick(60)
+			
+			#5. handle user inputs
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+			#		pygame.quit()
+			#		sys.exit()
+					self.quit = 1
+				if event.type == pygame.MOUSEBUTTONDOWN:
+					self.player2.tofire = 1
+				if event.type == pygame.MOUSEBUTTONUP:
+					self.player2.tofire = 0
 
 		#6. send a tick to every game object
-		if self.ready == 1:
+	#	if self.ready == 1:
 			self.rain.tick()
 			self.player1.tick()
 			self.player2.tick()
@@ -107,7 +113,8 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
-		else:	
+		else:
+			randback = random.randint(1,4)	
 			self.screen.blit(self.bg, (0, 0))
 #			self.screen.fill((0, 0, 0))
 			lt = pygame.font.Font('freesansbold.ttf', 50)
@@ -133,24 +140,24 @@ class Raindrops(pygame.sprite.Sprite):
 	def __init__(self, x, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode['ball_image'])
+		self.image = pygame.image.load("media/"+self.gs.mode['ball_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center = [x,-25]
 
 class Player2Prop(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode['shooter_body'])
+		self.image = pygame.image.load("media/"+self.gs.mode['shooter_body'])
 		self.rect = self.image.get_rect()
-		self.rect.center = mode['sb_location']
+		self.rect.center = self.gs.mode['sb_location']
 
 class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode['player_image'])
+		self.image = pygame.image.load("media/"+self.gs.mode['player_image'])
 		self.rect = self.image.get_rect()
-		self.rect.center = mode['player_start']
+		self.rect.center = self.gs.mode['player_start']
 		self.Moving = "N"
 		self.box = Box(self.rect.center, self.gs)
 	def tick(self):
@@ -161,21 +168,21 @@ class Player1(pygame.sprite.Sprite):
 		elif self.Moving == "L":
 			self.rect = self.rect.move([-5,0])
 			self.box.rect = self.box.rect.move([-5,0])
-		if self.rect.center[0]<mode['max_player_left']:
-			self.rect.center = [mode['max_player_left'], self.rect.center[1]]
-			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
-		elif self.rect.center[0]>mode['max_player_right']:
-			self.rect.center = [mode['max_player_right'], self.rect.center[1]]
-			self.box.rect.center = [self.rect.center[0]+mode['box_offset'][0], self.rect.center[1]+mode['box_offset'][1]]
+		if self.rect.center[0]<self.gs.mode['max_player_left']:
+			self.rect.center = [self.gs.mode['max_player_left'], self.rect.center[1]]
+			self.box.rect.center = [self.rect.center[0]+self.gs.mode['box_offset'][0], self.rect.center[1]+self.gs.mode['box_offset'][1]]
+		elif self.rect.center[0]>self.gs.mode['max_player_right']:
+			self.rect.center = [self.gs.mode['max_player_right'], self.rect.center[1]]
+			self.box.rect.center = [self.rect.center[0]+self.gs.mode['box_offset'][0], self.rect.center[1]+self.gs.mode['box_offset'][1]]
 
 class Box(pygame.sprite.Sprite):
 	def __init__(self, center, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode['box_image'])
+		self.image = pygame.image.load("media/"+self.gs.mode['box_image'])
 		self.rect = self.image.get_rect()
-		self.x = center[0]+mode['box_offset'][0]
-		self.y = center[1]+mode['box_offset'][1]
+		self.x = center[0]+self.gs.mode['box_offset'][0]
+		self.y = center[1]+self.gs.mode['box_offset'][1]
 		self.rect.center = [self.x,self.y]
 
 class Player2(pygame.sprite.Sprite):
@@ -185,9 +192,9 @@ class Player2(pygame.sprite.Sprite):
 		self.realx = 1
 		self.realy = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode["gun_image"])
+		self.image = pygame.image.load("media/"+self.gs.mode["gun_image"])
 		self.rect = self.image.get_rect()
-		self.rect.center = mode['gun_location']
+		self.rect.center = self.gs.mode['gun_location']
 #		self.rect.center = (600, 205)
 		self.lasers = []
 		self.angle = 0
@@ -226,7 +233,7 @@ class Player2(pygame.sprite.Sprite):
 			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5-mode['angle_offset']
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#-self.gs.mode['angle_offset']
 			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
@@ -240,7 +247,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/"+mode['bullet_image'])
+		self.image = pygame.image.load("media/"+self.gs.mode['bullet_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 
@@ -262,8 +269,22 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
-		if data == 'player 1 ready':
+		if data == 'sesame':
+			self.client.mode = sesame
 #			print 'string' + data
+			self.client.setup()
+			self.client.ready = 1
+		elif data=='pirates':
+			self.client.mode=pirates
+			self.client.setup()
+			self.client.ready = 1
+		elif data == 'bball':
+			self.client.mode = bball
+			self.client.setup()
+			self.client.ready = 1
+		elif data == 'otwist':
+			self.client.mode = otwist
+			self.client.setup()
 			self.client.ready = 1
 		else:
 			data =  pickle.loads(data)
