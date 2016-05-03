@@ -33,6 +33,7 @@ class GameSpace:
 
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
+		self.menu = Menu(self)
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
@@ -117,15 +118,52 @@ class GameSpace:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
 		else: #if p2 has not connected yet
-			self.screen.blit(self.bg, (0, 0))
-#			self.screen.fill((0,0,0))
-			lt = pygame.font.Font('freesansbold.ttf',30)
-			textSurf = lt.render("Waiting for p2 to connect...", True, (5, 100, 5))
-			TextRect = textSurf.get_rect()
-			self.screen.blit(textSurf, TextRect)
+#			self.screen.blit(self.bg, (0, 0))
+#			lt = pygame.font.Font('freesansbold.ttf',30)
+#			textSurf = lt.render("Waiting for p2 to connect...", True, (5, 100, 5))
+#			TextRect = textSurf.get_rect()
+#			self.screen.blit(textSurf, TextRect)
+			self.menu.display()
 			pygame.display.flip()
 	def write(self,data): #dummy function so that we can use parent connection's write function
 		pass
+
+class Menu(pygame.sprite.Sprite):
+	def __init__(self, gs=None):
+		self.gs = gs
+		self.pirateButton = pygame.image.load("media/penny.png")
+		self.bballButton = pygame.image.load("media/basketball.png")
+		self.otwistButton = pygame.image.load("media/porridge.png")
+		self.sesameButton = pygame.image.load("media/cookie.png")
+		
+		self.pirateRect = self.pirateButton.get_rect()
+		self.bballRect = self.bballButton.get_rect()
+		self.otwistRect = self.otwistButton.get_rect()
+		self.sesameRect = self.sesameButton.get_rect()
+
+		self.pirateRect.center = [145, 300]
+		self.bballRect.center = [245, 300]
+		self.otwistRect.center = [345, 300]
+		self.sesameRect.center = [445, 300]
+
+	def display(self):
+#		self.gs.screen.blit(self.gs.bg, (0, 0))
+		self.gs.screen.fill((0, 0, 0))
+		lt = pygame.font.Font('freesansbold.ttf', 30)
+		textSurf = lt.render("Choose a mode!", True, (255, 255, 255))
+		textRect = textSurf.get_rect()
+		self.gs.screen.blit(textSurf, textRect)
+		self.gs.screen.blit(self.pirateButton, self.pirateRect)
+		self.gs.screen.blit(self.bballButton, self.bballRect)
+		self.gs.screen.blit(self.otwistButton, self.otwistRect)
+		self.gs.screen.blit(self.sesameButton, self.sesameRect)
+
+		for event in pygame.event.get():
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				mx, my = pygame.mouse.get_pos()
+				if mx > self.pirateRect.centerx-25 and mx < self.pirateRect.centerx+25 and my > self.pirateRect.centery-25 and my < self.pirateRect.centery+25:
+					print 'clicked pirate'				
+
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
