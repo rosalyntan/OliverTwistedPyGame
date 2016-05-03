@@ -20,7 +20,7 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-mode = sesame
+mode = otwist
 
 class GameSpace:
 	def __init__(self):
@@ -226,7 +226,7 @@ class Player2(pygame.sprite.Sprite):
 			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5-mode['angle_offset']
 			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)

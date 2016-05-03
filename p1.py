@@ -20,7 +20,7 @@ from pygame.locals import *
 
 SERVER_PORT = 40041
 
-mode = sesame
+mode = otwist
 
 class GameSpace:
 	def __init__(self):
@@ -117,8 +117,8 @@ class GameSpace:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
 		else: #if p2 has not connected yet
-			self.screen.fill((0,0,0))
-			
+			self.screen.blit(self.bg, (0, 0))
+#			self.screen.fill((0,0,0))
 			lt = pygame.font.Font('freesansbold.ttf',30)
 			textSurf = lt.render("Waiting for p2 to connect...", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
@@ -234,7 +234,7 @@ class Player2(pygame.sprite.Sprite):
 #			self.tofire = False
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5-mode['angle_offset']
 			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
