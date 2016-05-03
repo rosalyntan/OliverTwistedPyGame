@@ -162,7 +162,14 @@ class Menu(pygame.sprite.Sprite):
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				mx, my = pygame.mouse.get_pos()
 				if mx > self.pirateRect.centerx-25 and mx < self.pirateRect.centerx+25 and my > self.pirateRect.centery-25 and my < self.pirateRect.centery+25:
-					print 'clicked pirate'				
+					print 'clicked pirate'
+				elif mx > self.bballRect.centerx-25 and mx < self.bballRect.centerx+25 and my > self.bballRect.centery-25 and my < self.bballRect.centery+25:
+					print 'clicked bball'
+				elif mx > self.otwistRect.centerx-25 and mx < self.otwistRect.centerx+25 and my > self.otwistRect.centery-25 and my < self.otwistRect.centery+25:
+					print 'clicked otwist'
+				elif mx > self.sesameRect.centerx-25 and mx < self.sesameRect.centerx+25 and my > self.sesameRect.centery-25 and my < self.sesameRect.centery+25:
+					print 'clicked sesame'
+				
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
