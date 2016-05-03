@@ -226,7 +226,7 @@ class Player2(pygame.sprite.Sprite):
 			startx = 600-1/(1+slope**2)**.5*92
 			starty = 205-slope/(1+slope**2)**.5
 			total = math.fabs(xSlope)+math.fabs(ySlope)
-			self.lasers.append(Laser(self, self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
+			self.lasers.append(Laser(self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
 #			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
 			self.tofire = 0
 			self.fired = 1
