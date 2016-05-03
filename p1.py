@@ -20,7 +20,7 @@ from pygame.locals import *
 
 SERVER_PORT = 40041
 
-mode = bball
+mode = sesame
 
 class GameSpace:
 	def __init__(self):

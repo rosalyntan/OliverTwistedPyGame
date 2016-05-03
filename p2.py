@@ -20,7 +20,7 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-mode = bball
+mode = sesame
 
 class GameSpace:
 	def __init__(self):
@@ -36,6 +36,7 @@ class GameSpace:
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
+		self.p2body = Player2Prop(self)
 
 		self.bg = pygame.image.load("media/"+mode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, mode['background_scale'])
@@ -93,6 +94,7 @@ class GameSpace:
 			self.acked = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
+			self.screen.blit(self.p2body.image, self.p2body.rect)
 			self.screen.blit(self.player1.image, self.player1.rect)
 			for laser in self.player2.lasers:
 				self.screen.blit(laser.image, laser.rect)
@@ -134,6 +136,13 @@ class Raindrops(pygame.sprite.Sprite):
 		self.image = pygame.image.load("media/"+mode['ball_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center = [x,-25]
+
+class Player2Prop(pygame.sprite.Sprite):
+	def __init__(self, gs = None):
+		self.gs = gs
+		self.image = pygame.image.load("media/"+mode['shooter_body'])
+		self.rect = self.image.get_rect()
+		self.rect.center = mode['sb_location']
 
 class Player1(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
