@@ -20,7 +20,6 @@ from pygame.locals import *
 SERVER_HOST = 'localhost'
 SERVER_PORT = 40041
 
-#mode = otwist
 
 class GameSpace:
 	def __init__(self):

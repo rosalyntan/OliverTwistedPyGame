@@ -20,7 +20,7 @@ from pygame.locals import *
 
 SERVER_PORT = 40041
 
-#mode = None
+
 
 class GameSpace:
 	def __init__(self):
@@ -56,7 +56,7 @@ class GameSpace:
 		self.bg = pygame.transform.scale(self.bg, self.mode['background_scale'])
 
 	def game_loop(self):
-		if self.connected and self.mode==True:
+		if self.connected and self.mode != None:
 			for bullet in self.player2.lasers:
 				for guy in self.rain.drops:
 					if collision(guy.rect.center, bullet.rect.center):
