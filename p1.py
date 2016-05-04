@@ -160,7 +160,7 @@ class Menu(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
 		# button images to choose different modes
-		self.pirateButton = pygame.image.load("media/penny.png")
+		self.pirateButton = pygame.image.load("media/piratecoin.png")
 		self.bballButton = pygame.image.load("media/basketball.png")
 		self.otwistButton = pygame.image.load("media/porridge.png")
 		self.sesameButton = pygame.image.load("media/cookie.png")
