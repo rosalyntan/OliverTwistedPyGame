@@ -67,6 +67,7 @@ class GameSpace:
 					if collision(guy.rect.center, bullet.rect.center):
 						self.rain.drops.remove(guy)
 						self.player2.lasers.remove(bullet)
+						self.score2+=1
 						break
 
 		#	mx, my = pygame.mouse.get_pos()
@@ -111,7 +112,7 @@ class GameSpace:
 					rainx.append(drop.rect.center[0])
 					rainy.append(drop.rect.center[1])
 			
-				self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1, pickle.dumps(rainx), pickle.dumps(rainy)]))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+				self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1, pickle.dumps(rainx), pickle.dumps(rainy), self.score2]))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 			self.acked = True
 			#7. finally, display game object
 			#background image
@@ -411,14 +412,13 @@ class ServerConnection(Protocol):
 #			print data[2]
 			self.client.player2.mx = data[0]
 			self.client.player2.my = data[1]
-			self.client.score2 = data[2]
-			data[3]=pickle.loads(data[3])
+			data[2]=pickle.loads(data[2])
+			data[3] = pickle.loads(data[3])
 			data[4] = pickle.loads(data[4])
 			data[5] = pickle.loads(data[5])
-			data[6] = pickle.loads(data[6])
 			i = 0
-			for x in data[3]:
-				self.client.player2.lasers.append(Laser(data[3][i], data[4][i], data[5][i], data[6][i], self.client))
+			for x in data[2]:
+				self.client.player2.lasers.append(Laser(data[2][i], data[3][i], data[4][i], data[5][i], self.client))
 				i+=1
 	
 			
