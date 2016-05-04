@@ -61,9 +61,9 @@ class Player(pygame.sprite.Sprite):
 		self.realx = 1
 		self.realy = 1
 		self.gs = gs
-		self.image = pygame.image.load("media/michellearm.png")
+		self.image = pygame.image.load("media/bumblearm.png")
 		self.rect = self.image.get_rect()
-		self.rect.center = (600, 205)
+		self.rect.center = (550, 205)
 		self.lasers = []
 		#keep original image to limit resize errors
 		self.orig_image = self.image
@@ -103,9 +103,9 @@ class Michelle(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs=gs
-		self.image=pygame.image.load("media/michellebody.png")
+		self.image=pygame.image.load("media/bumblebody.png")
 		self.rect=self.image.get_rect()
-		self.rect.center = [622,300]
+		self.rect.center = [575,310]
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, gs=None, xc=320, yc=240, xm=1, ym=1):
 		pygame.sprite.Sprite.__init__(self)
@@ -114,7 +114,7 @@ class Laser(pygame.sprite.Sprite):
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
-		self.image = pygame.image.load("media/lettuce.png")
+		self.image = pygame.image.load("media/ladles.png")
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
 	
