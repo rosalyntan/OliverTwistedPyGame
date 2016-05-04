@@ -107,12 +107,11 @@ class GameSpace:
 			if self.acked and self.counter%3==0:
 				rainx = []
 				rainy = []
-				for drop in self.Rain.drops:
+				for drop in self.rain.drops:
 					rainx.append(drop.rect.center[0])
 					rainy.append(drop.rect.center[1])
 			
-				self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1], pickle.dumps(rainx), pickle.dumps(rainy)))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
-				print 'sending data'
+				self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1, pickle.dumps(rainx), pickle.dumps(rainy)]))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 			self.acked = True
 			#7. finally, display game object
 			#background image
