@@ -70,7 +70,7 @@ class GameSpace:
 						self.player2.lasers.remove(bullet)
 						if self.scoreCount%3 == 1:
 							self.score2+=1
-							self.scoreCount+=1
+						self.scoreCount+=1
 						break
 
 		#	mx, my = pygame.mouse.get_pos()
@@ -89,7 +89,8 @@ class GameSpace:
 				if event.type == pygame.QUIT:
 	#				pygame.quit()
 	#				sys.exit()
-					self.quit = 1
+	#				self.quit = 1
+					self.quit()
 				if event.type == KEYDOWN:
 					if event.key == 275: #right arrow
 						self.player1.Moving = "R" 
@@ -158,6 +159,8 @@ class GameSpace:
 			
 	def write(self,data): #dummy function so that we can use parent connection's write function
 		pass
+	def quit(self): # dummy function connected to connection's quit function
+		pass
 
 class Menu(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -213,7 +216,7 @@ class Menu(pygame.sprite.Sprite):
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				self.gs.quit=1	
+				self.gs.quit()
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
 					print 'clicked pirate'
@@ -404,11 +407,11 @@ class ServerConnection(Protocol):
 			if self.client.mode != None:
 				print 'sending existing mode' + self.client.mode['name']
 				self.transport.write(self.client.mode['name'])
-		elif data == 'game over':
-			print 'game over received'
-			self.client.connected = False
-			self.client.mode = None
-			self.client.acked = False
+#		elif data == 'game over':
+#			print 'game over received'
+#			self.client.connected = False
+#			self.client.mode = None
+#			self.client.acked = False
 		else:
 			self.client.player2.lasers = []
 			data = pickle.loads(zlib.decompress(data))
@@ -433,6 +436,8 @@ class ServerConnection(Protocol):
 		reactor.stop()
 	def write(self, data): #write function used in GameSpace
 		self.transport.write(data)
+	def quit(self):
+		self.transport.loseConnection()
 
 class ServerConnFactory(Factory):
 	def __init__(self, client):
@@ -440,6 +445,7 @@ class ServerConnFactory(Factory):
 	def buildProtocol(self, addr):
 		proto = ServerConnection(addr, self.client)
 		self.client.write = proto.write #sets write function in GameSpace to connection's write function
+		self.client.quit = proto.quit # sets quit function in GameSpace to connection's quit function
 		return proto
 
 
