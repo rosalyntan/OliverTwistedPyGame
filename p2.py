@@ -286,8 +286,8 @@ class Player2(pygame.sprite.Sprite):
 			ySlope = self.realy-self.rect.center[1]
 				
 			total = math.fabs(xSlope)+math.fabs(ySlope)
-#			if self.lasers.size()
-			self.lasers.append(Laser(self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
+			if len(self.lasers) < 1:
+				self.lasers.append(Laser(self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
 			self.tofire = 0
 			self.fired = 1
 		else:	
