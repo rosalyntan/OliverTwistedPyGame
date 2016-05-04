@@ -61,7 +61,7 @@ class GameSpace:
 
 	def game_loop(self):
 		if self.connected and self.mode != None:
-			counter+=1;
+			self.counter+=1;
 			for bullet in self.player2.lasers:
 				for guy in self.rain.drops:
 					if collision(guy.rect.center, bullet.rect.center):
@@ -104,7 +104,7 @@ class GameSpace:
 			self.player2.tick()
 			for laser in self.player2.lasers:
 				laser.tick()
-			if self.acked and counter%3==0:
+			if self.acked and self.counter%3==0:
 				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 				print 'sending data'
 			self.acked = True
@@ -406,8 +406,8 @@ class ServerConnection(Protocol):
 			self.client.player2.mx = data[0]
 			self.client.player2.my = data[1]
 			self.client.score2 = data[2]
-			print data[3]
-			print data[4]
+			print pickle.loads(data[3])
+			print pickle.loads(data[4])
 #		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()

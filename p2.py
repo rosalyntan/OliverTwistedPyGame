@@ -99,10 +99,10 @@ class GameSpace:
 			self.rain.tick()
 			self.player1.tick()
 			self.player2.tick()
-			tickNum++
+			self.tickNum+=1
 			for laser in self.player2.lasers:
 				laser.tick()
-			if self.acked == 1 and tickNum%20 == 0:
+			if self.acked == 1 and self.tickNum%20 == 0:
 				laserListx = []
 				laserListy = []
 				for laser in self.player2.lasers:
@@ -286,10 +286,7 @@ class Player2(pygame.sprite.Sprite):
 			#code to emit a laser beam block
 			xSlope = self.realx-self.rect.center[0]
 			ySlope = self.realy-self.rect.center[1]
-			slope = ySlope/xSlope
-			cosine = 1/(1+(slope)**2)**.5
-			startx = 600-1/(1+slope**2)**.5*92
-			starty = 205-slope/(1+slope**2)**.5
+				
 			total = math.fabs(xSlope)+math.fabs(ySlope)
 			self.lasers.append(Laser(self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
 #			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
