@@ -38,6 +38,9 @@ http://i45.tinypic.com/osyb61.png
 KOBE IMAGE:
 http://i.imgur.com/ZZFIWZ9.png
 
+BUBBLEGUM:
+http://wac.450f.edgecastcdn.net/80450F/wyrk.com/files/2011/12/Gum-Bubble.jpg
+
 PORRIDGE IMAGE:
 http://www.xteddy.org/porridge/bowl-of-cooked-porridge.jpg
 
