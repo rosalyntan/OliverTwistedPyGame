@@ -41,7 +41,7 @@ class GameSpace:
 		#these lines set up the background image, could be done later and could be done in a function
 
 		#random variables in GameSpace
-		self.ready = False
+		self.counter = 0
 		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
 		self.connected = False #determines whether p2 has connected and game can start
 		self.acked = False
@@ -61,6 +61,7 @@ class GameSpace:
 
 	def game_loop(self):
 		if self.connected and self.mode != None:
+			counter+=1;
 			for bullet in self.player2.lasers:
 				for guy in self.rain.drops:
 					if collision(guy.rect.center, bullet.rect.center):
@@ -103,7 +104,7 @@ class GameSpace:
 			self.player2.tick()
 			for laser in self.player2.lasers:
 				laser.tick()
-			if self.acked:
+			if self.acked and counter%3==0:
 				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 				print 'sending data'
 			self.acked = True
@@ -186,11 +187,11 @@ class Menu(pygame.sprite.Sprite):
 
 
 		if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (100,100,0), [self.pirateRect.centerx,self.pirateRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (255,0,169), [self.pirateRect.centerx,self.pirateRect.centery], 50,0)
 		elif  dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (100,100,0), [self.bballRect.centerx,self.bballRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (255,0,169), [self.bballRect.centerx,self.bballRect.centery], 50,0)
 		elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (100,100,0), [self.otwistRect.centerx,self.otwistRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (255,0,169), [self.otwistRect.centerx,self.otwistRect.centery], 50,0)
 		elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
 			pygame.draw.circle(self.gs.screen, (100,100,0), [self.sesameRect.centerx,self.sesameRect.centery], 50,0)
 		elif self.circleCenter != None:
@@ -404,8 +405,9 @@ class ServerConnection(Protocol):
 #			print data[2]
 			self.client.player2.mx = data[0]
 			self.client.player2.my = data[1]
-			self.client.player2.tofire = data[2]
-			self.client.score2 = data[3]
+			self.client.score2 = data[2]
+			print data[3]
+			print data[4]
 #		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
