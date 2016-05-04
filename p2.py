@@ -14,6 +14,7 @@ import zlib
 from twisted.internet.protocol import ClientFactory
 from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
+from twisted.internet.defer import DeferredQueue
 from twisted.internet.task import LoopingCall
 
 import pygame
@@ -106,7 +107,7 @@ class GameSpace:
 #				self.player2.tofire = 1-self.player2.tofire
 				self.player2.fired = 0
 			self.acked = 1
-			if self.score2 > 50:
+			if self.score2 > 20:
 				self.gameOver = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
@@ -121,7 +122,7 @@ class GameSpace:
 			text2Surf = lt.render(str(self.score1), True, (100,100,100))
 			TextRect2 = text2Surf.get_rect()
 			TextRect2.center = [64,178]
-			print TextRect2.size	
+#			print TextRect2.size	
 			self.screen.blit(text2Surf, TextRect2)
 			self.screen.blit(textSurf, TextRect)
 			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
@@ -154,6 +155,7 @@ class GameOver(pygame.sprite.Sprite):
 	def display(self, winner):
 		if self.messageSent == 0:
 			self.gs.write('game over')
+			print 'game over sent'
 			self.messageSent = 1
 		self.gs.screen.fill((0, 0, 0))
 		if winner == 1:
@@ -171,9 +173,12 @@ class GameOver(pygame.sprite.Sprite):
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				mx, my = pygame.mouse.get_pos()
 				if mx > self.playRect.centerx-25 and mx < self.playRect.centerx+25 and my > self.playRect.centery-25 and my < self.playRect.centery+25:
-					self.gs.write('player 2 connected')
+#					self.gs.write('player 2 connected')
 					self.gs.gameOver = 0
 					self.gs.ready = 0
+					self.gs.acked = 0
+					self.messageSent = 0
+					self.gs.write('player 2 connected')
 					print 'clicked play again'
 				elif mx > self.quitRect.centerx-25 and mx < self.quitRect.centerx+25 and my > self.quitRect.centery-25 and my < self.quitRect.centery+25:
 					print 'clicked quit'
@@ -322,25 +327,30 @@ def collision(ball_center, bullet_center):
 class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
+		self.queue = DeferredQueue()
 	def dataReceived(self, data):
 #		data = data # sometimes it works better with this line?????
 		if self.client.quit == 1:
 			print 'quit called'
 			self.transport.loseConnection()
 		if data == 'sesame':
+			print 'sesame'
 			self.client.mode = sesame
 #			print 'string' + data
 			self.client.setup()
 			self.client.ready = 1
 		elif data=='pirates':
+			print 'pirates'
 			self.client.mode=pirates
 			self.client.setup()
 			self.client.ready = 1
 		elif data == 'bball':
+			print 'bball'
 			self.client.mode = bball
 			self.client.setup()
 			self.client.ready = 1
 		elif data == 'otwist':
+			print 'otwist'
 			self.client.mode = otwist
 			self.client.setup()
 			self.client.ready = 1

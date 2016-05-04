@@ -17,6 +17,7 @@ from twisted.internet.protocol import Protocol
 from twisted.internet import reactor
 from twisted.internet.defer import DeferredQueue
 from twisted.internet.task import LoopingCall
+
 import pygame
 from pygame.locals import *
 
@@ -104,6 +105,7 @@ class GameSpace:
 				laser.tick()
 			if self.acked:
 				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+				print 'sending data'
 			self.acked = True
 			#7. finally, display game object
 			#background image
@@ -210,6 +212,7 @@ class Menu(pygame.sprite.Sprite):
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('pirates')
+						print 'sending pirates'
 				elif dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
 					print 'clicked bball'
 					self.circleCenter = [self.bballRect.centerx, self.bballRect.centery]
@@ -217,6 +220,7 @@ class Menu(pygame.sprite.Sprite):
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('bball')
+						print 'sending bball'
 				elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
 					print 'clicked otwist'
 					self.circleCenter = [self.otwistRect.centerx, self.otwistRect.centery]
@@ -224,6 +228,7 @@ class Menu(pygame.sprite.Sprite):
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('otwist')
+						print 'sending otwist'
 				elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
 					print 'clicked sesame'
 					self.circleCenter = [self.sesameRect.centerx, self.sesameRect.centery]
@@ -231,6 +236,7 @@ class Menu(pygame.sprite.Sprite):
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('sesame')
+						print 'sending sesame'
 				
 
 class Rain(pygame.sprite.Sprite):
@@ -378,6 +384,7 @@ class ServerConnection(Protocol):
 	def __init__(self, addr, client):
 		self.addr = addr
 		self.client = client #given a reference to GameSpace!
+		self.queue = DeferredQueue()
 	def dataReceived(self, data):
 #		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
@@ -385,10 +392,13 @@ class ServerConnection(Protocol):
 			self.client.connected = True
 			self.client.waitingString = "p2 connected!"
 			if self.client.mode != None:
+				print 'sending existing mode' + self.client.mode['name']
 				self.transport.write(self.client.mode['name'])
 		elif data == 'game over':
+			print 'game over received'
 			self.client.connected = False
 			self.client.mode = None
+			self.client.acked = False
 		else:
 			data = pickle.loads(data)
 #			print data[2]
