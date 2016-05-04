@@ -193,15 +193,15 @@ class Menu(pygame.sprite.Sprite):
 
 		# highlight button when hovering over it
 		if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (255,0,169), [self.pirateRect.centerx,self.pirateRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (148,0,211), [self.pirateRect.centerx,self.pirateRect.centery], 50,0)
 		elif  dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (255,0,169), [self.bballRect.centerx,self.bballRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (0,255,0), [self.bballRect.centerx,self.bballRect.centery], 50,0)
 		elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
 			pygame.draw.circle(self.gs.screen, (255,0,169), [self.otwistRect.centerx,self.otwistRect.centery], 50,0)
 		elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
-			pygame.draw.circle(self.gs.screen, (100,100,0), [self.sesameRect.centerx,self.sesameRect.centery], 50,0)
+			pygame.draw.circle(self.gs.screen, (0,249,255), [self.sesameRect.centerx,self.sesameRect.centery], 50,0)
 		elif self.circleCenter != None:
-			pygame.draw.circle(self.gs.screen, (100,100,0), self.circleCenter, 50,0)
+			pygame.draw.circle(self.gs.screen, self.color, self.circleCenter, 50,0)
 
 		# display buttons	
 		self.gs.screen.blit(self.pirateButton, self.pirateRect)
@@ -216,24 +216,28 @@ class Menu(pygame.sprite.Sprite):
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
 					self.circleCenter = [self.pirateRect.centerx, self.pirateRect.centery]
+					self.color = (148,0,211)
 					self.gs.mode = pirates
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('pirates')
 				elif dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
 					self.circleCenter = [self.bballRect.centerx, self.bballRect.centery]
+					self.color = (0,255,0)
 					self.gs.mode = bball
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('bball')
 				elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
 					self.circleCenter = [self.otwistRect.centerx, self.otwistRect.centery]
+					self.color = (255,0,169)
 					self.gs.mode = otwist
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('otwist')
 				elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
 					self.circleCenter = [self.sesameRect.centerx, self.sesameRect.centery]
+					self.color = (0,249,255)
 					self.gs.mode = sesame
 					self.gs.setup()
 					if self.gs.connected:
@@ -429,8 +433,8 @@ class ServerConnFactory(Factory):
 		self.client = client #given reference to GameSpace
 	def buildProtocol(self, addr):
 		proto = ServerConnection(addr, self.client)
-		self.client.write = proto.write #sets write function in GameSpace to connection's write function
-		self.client.quit = proto.quit # sets quit function in GameSpace to connection's quit function
+		self.client.write = proto.write #sets write function in GameSpace to connection's write function (see website reference in readme)
+		self.client.quit = proto.quit # sets quit function in GameSpace to connection's quit function ^^
 		return proto
 
 # main, calls game loop
