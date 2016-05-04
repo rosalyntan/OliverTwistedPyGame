@@ -395,7 +395,6 @@ class ServerConnection(Protocol):
 	def __init__(self, addr, client):
 		self.addr = addr
 		self.client = client #given a reference to GameSpace
-		self.queue = DeferredQueue()
 	def dataReceived(self, data):
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
 			self.client.connected = True
