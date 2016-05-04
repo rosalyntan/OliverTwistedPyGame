@@ -272,8 +272,8 @@ class Player2(pygame.sprite.Sprite):
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, xc=320, yc=240, xm=1, ym=1, gs=None):
 		pygame.sprite.Sprite.__init__(self)
-		xc=xc+xm*32
-		yc=yc+ym*32
+		xc=xc+xm*125
+		yc=yc+ym*125
 		self.xm=xm*10
 		self.ym=ym*10
 		self.gs = gs
