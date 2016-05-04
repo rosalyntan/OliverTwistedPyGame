@@ -1,5 +1,7 @@
 # Rosalyn Tan, Nancy McNamara
 
+#THIS IS PLAYER 2, THE MORE CLIENT-Y CLIENT, THE ONE WHO SHOOTS AT THINGS
+
 from modes import backgrounds, sesame, pirates, bball, otwist
 
 import os
@@ -49,6 +51,7 @@ class GameSpace:
 
 		#3. start game loop
 	def setup(self):
+		self.score1 = 0
 		self.score2 = 0
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
@@ -99,11 +102,11 @@ class GameSpace:
 #					self.player2.lasers.remove(laser)
 			if self.acked == 1:
 #				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
-				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.player2.fired]))
+				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.player2.fired, self.score2]))
 #				self.player2.tofire = 1-self.player2.tofire
 				self.player2.fired = 0
 			self.acked = 1
-			if self.score2 > 2:
+			if self.score2 > 50:
 				self.gameOver = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
@@ -115,6 +118,11 @@ class GameSpace:
 			lt = pygame.font.Font('freesansbold.ttf',115)
 			textSurf = lt.render(str(self.score2), True, (100, 100, 100))
 			TextRect = textSurf.get_rect()
+			text2Surf = lt.render(str(self.score1), True, (100,100,100))
+			TextRect2 = text2Surf.get_rect()
+			TextRect2.center = [64,178]
+			print TextRect2.size	
+			self.screen.blit(text2Surf, TextRect2)
 			self.screen.blit(textSurf, TextRect)
 			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
 			for guy in self.rain.drops:
@@ -341,6 +349,7 @@ class ClientConnection(Protocol):
 			self.client.player1.rect.center = data[0]
 			self.client.player1.box.rect.center = data[1]
 			self.client.rain.addNew = data[2]
+			self.client.score1 = data[3]
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):

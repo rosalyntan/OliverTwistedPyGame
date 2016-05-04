@@ -4,10 +4,6 @@ DONE figure out the coin error
 DONE make p2 wait for acknowledgment
 DONE make coins disappear on both ends
 DONE make them run at the same time
--figure out the enemy on...
-	-sesame street
-	-bball
-	-otwist
 -how do you win and what happens when you do????
 DONE figure out exiting
 -syncing issues?
