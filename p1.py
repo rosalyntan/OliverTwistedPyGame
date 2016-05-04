@@ -119,7 +119,7 @@ class GameSpace:
 	
 			#text & text display, could be done in a function
 			lt = pygame.font.Font('freesansbold.ttf',115)
-			textSurf = lt.render(str(self.score1), True, (100, 100, 100))
+			textSurf = lt.render(str(self.score1), True, (255, 0, 169))
 			TextRect = textSurf.get_rect()
 			text2Surf = lt.render(str(self.score2), True, (255,255,255))
 			TextRect2 = text2Surf.get_rect()
