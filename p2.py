@@ -37,7 +37,6 @@ class GameSpace:
 		self.clock = pygame.time.Clock()
 
 		#random variables in GameSpace
-#		self.score2 = 0
 		self.keyspressed = 0
 		self.mode = None
 		self.quit = 0
@@ -72,13 +71,13 @@ class GameSpace:
 			mx, my = pygame.mouse.get_pos()
 
 
-			for bullet in self.player2.lasers:
-				for guy in self.rain.drops:
-					if collision(guy.rect.center, bullet.rect.center):
-						self.rain.drops.remove(guy)
-						self.player2.lasers.remove(bullet)
-						self.score2+=1
-						break
+#			for bullet in self.player2.lasers:
+#				for guy in self.rain.drops:
+#					if collision(guy.rect.center, bullet.rect.center):
+#						self.rain.drops.remove(guy)
+#						self.player2.lasers.remove(bullet)
+#						self.score2+=1
+#						break
 
 			#4. clock tick regulation (framerate)
 			self.clock.tick(60)
@@ -131,7 +130,6 @@ class GameSpace:
 			text2Surf = lt.render(str(self.score1), True, (100,100,100))
 			TextRect2 = text2Surf.get_rect()
 			TextRect2.center = [64,178]
-#			print TextRect2.size	
 			self.screen.blit(text2Surf, TextRect2)
 			self.screen.blit(textSurf, TextRect)
 			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
@@ -182,7 +180,6 @@ class GameOver(pygame.sprite.Sprite):
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				mx, my = pygame.mouse.get_pos()
 				if mx > self.playRect.centerx-25 and mx < self.playRect.centerx+25 and my > self.playRect.centery-25 and my < self.playRect.centery+25:
-#					self.gs.write('player 2 connected')
 					self.gs.gameOver = 0
 					self.gs.ready = 0
 					self.gs.acked = 0
@@ -199,8 +196,6 @@ class Rain(pygame.sprite.Sprite):
 		self.addNew = False
 		self.drops = []
 	def tick(self):
-#		if self.addNew:
-#			self.drops.append(Raindrops(self.addNew, -25, self.gs))
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1])
 
@@ -263,7 +258,6 @@ class Player2(pygame.sprite.Sprite):
 		self.image = pygame.image.load("media/"+self.gs.mode["gun_image"])
 		self.rect = self.image.get_rect()
 		self.rect.center = self.gs.mode['gun_location']
-#		self.rect.center = (600, 205)
 		self.lasers = []
 		self.angle = 0
 		#keep original image to limit resize errors
@@ -293,13 +287,11 @@ class Player2(pygame.sprite.Sprite):
 				
 			total = math.fabs(xSlope)+math.fabs(ySlope)
 			self.lasers.append(Laser(self.rect.center[0], self.rect.center[1], xSlope/total, ySlope/total, self.gs))
-#			self.lasers.append(Laser(self,startx,starty,xSlope/total, ySlope/total))
 			self.tofire = 0
 			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
 			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#-self.gs.mode['angle_offset']
-			#self.image = rot_center(self.orig_image, angle)	
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = 0
@@ -335,14 +327,12 @@ class ClientConnection(Protocol):
 		self.client = client
 		self.queue = DeferredQueue()
 	def dataReceived(self, data):
-#		data = data # sometimes it works better with this line?????
 		if self.client.quit == 1:
 			print 'quit called'
 			self.transport.loseConnection()
 		if data == 'sesame':
 			print 'sesame'
 			self.client.mode = sesame
-#			print 'string' + data
 			self.client.setup()
 			self.client.ready = 1
 		elif data=='pirates':
@@ -372,8 +362,7 @@ class ClientConnection(Protocol):
 			for x in rainx:
 				self.client.rain.drops.append(Raindrops(x, rainy[i], self.client))
 				i+=1
-#			print pickle.loads(data[3])
-#			print pickle.loads(data[4])
+			self.client.score2=data[5]
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):
