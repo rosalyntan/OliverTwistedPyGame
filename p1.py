@@ -149,6 +149,8 @@ class Menu(pygame.sprite.Sprite):
 		self.bballRect.center = [245, 300]
 		self.otwistRect.center = [345, 300]
 		self.sesameRect.center = [445, 300]
+		
+		self.circleCenter = None
 
 	def display(self):
 		mx, my = pygame.mouse.get_pos()
@@ -165,20 +167,22 @@ class Menu(pygame.sprite.Sprite):
 		messRect.center = 450,460
 		self.gs.screen.blit(messSurf, messRect)
 
+
+		if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
+			pygame.draw.circle(self.gs.screen, (100,100,0), [self.pirateRect.centerx,self.pirateRect.centery], 50,0)
+		elif  dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
+			pygame.draw.circle(self.gs.screen, (100,100,0), [self.bballRect.centerx,self.bballRect.centery], 50,0)
+		elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
+			pygame.draw.circle(self.gs.screen, (100,100,0), [self.otwistRect.centerx,self.otwistRect.centery], 50,0)
+		elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
+			pygame.draw.circle(self.gs.screen, (100,100,0), [self.sesameRect.centerx,self.sesameRect.centery], 50,0)
+		elif self.circleCenter != None:
+			pygame.draw.circle(self.gs.screen, (100,100,0), self.circleCenter, 50,0)
+	
 		self.gs.screen.blit(self.pirateButton, self.pirateRect)
 		self.gs.screen.blit(self.bballButton, self.bballRect)
 		self.gs.screen.blit(self.otwistButton, self.otwistRect)
 		self.gs.screen.blit(self.sesameButton, self.sesameRect)
-
-		if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
-			print "BUBBLE MATEY"
-		elif  dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
-			print "BUBBLE KOBE"
-		elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
-			print "BUBBLE OT"
-		elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
-			print "BUBBLE SES"
-
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -186,24 +190,28 @@ class Menu(pygame.sprite.Sprite):
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
 					print 'clicked pirate'
+					self.circleCenter = [self.pirateRect.centerx, self.pirateRect.centery]
 					self.gs.mode = pirates
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('pirates')
 				elif dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
 					print 'clicked bball'
+					self.circleCenter = [self.bballRect.centerx, self.bballRect.centery]
 					self.gs.mode = bball
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('bball')
 				elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
 					print 'clicked otwist'
+					self.circleCenter = [self.otwistRect.centerx, self.otwistRect.centery]
 					self.gs.mode = otwist
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('otwist')
 				elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
 					print 'clicked sesame'
+					self.circleCenter = [self.sesameRect.centerx, self.sesameRect.centery]
 					self.gs.mode = sesame
 					self.gs.setup()
 					if self.gs.connected:
