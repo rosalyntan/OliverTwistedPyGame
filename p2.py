@@ -102,7 +102,7 @@ class GameSpace:
 			self.tickNum+=1
 			for laser in self.player2.lasers:
 				laser.tick()
-			if self.acked == 1 and self.tickNum%20 == 0:
+			if self.acked == 1 and self.tickNum%5 == 0:
 				laserListx = []
 				laserListy = []
 				for laser in self.player2.lasers:
