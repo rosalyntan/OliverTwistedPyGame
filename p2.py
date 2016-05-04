@@ -28,13 +28,13 @@ class GameSpace:
 
 		self.size = self.width, self.height = 640, 480
 		self.screen = pygame.display.set_mode(self.size)
-		pygame.display.set_caption("ppprrrrooooojjjjeeeeccccttttt")
+		pygame.display.set_caption("Oliver Twisted Pygame")
 
 		#2. set up game objects
 		self.clock = pygame.time.Clock()
 
 		#random variables in GameSpace
-		self.score2 = 0
+#		self.score2 = 0
 		self.keyspressed = 0
 		self.mode = None
 		self.quit = 0
@@ -43,12 +43,13 @@ class GameSpace:
 		tempMode = backgrounds[random.randint(0,3)]
 		self.bg = pygame.image.load("media/"+tempMode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, tempMode['background_scale'])
-		self.gameOver = 0		
+		self.gameOver = 0
 
 #		random.seed()
 
 		#3. start game loop
 	def setup(self):
+		self.score2 = 0
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
@@ -141,7 +142,11 @@ class GameOver(pygame.sprite.Sprite):
 
 		self.playRect.center = [175, 200]
 		self.quitRect.center = [465, 200]
+		self.messageSent = 0
 	def display(self, winner):
+		if self.messageSent == 0:
+			self.gs.write('game over')
+			self.messageSent = 1
 		self.gs.screen.fill((0, 0, 0))
 		if winner == 1:
 			lt = pygame.font.Font('freesansbold.ttf', 30)
@@ -154,6 +159,17 @@ class GameOver(pygame.sprite.Sprite):
 		self.gs.screen.blit(textSurf, textRect)
 		self.gs.screen.blit(self.playAgain, self.playRect)
 		self.gs.screen.blit(self.quit, self.quitRect)
+		for event in pygame.event.get():
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				mx, my = pygame.mouse.get_pos()
+				if mx > self.playRect.centerx-25 and mx < self.playRect.centerx+25 and my > self.playRect.centery-25 and my < self.playRect.centery+25:
+					self.gs.write('player 2 connected')
+					self.gs.gameOver = 0
+					self.gs.ready = 0
+					print 'clicked play again'
+				elif mx > self.quitRect.centerx-25 and mx < self.quitRect.centerx+25 and my > self.quitRect.centery-25 and my < self.quitRect.centery+25:
+					print 'clicked quit'
+					self.gs.quit = 1
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -299,6 +315,10 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
+#		data = data # sometimes it works better with this line?????
+		if self.client.quit == 1:
+			print 'quit called'
+			self.transport.loseConnection()
 		if data == 'sesame':
 			self.client.mode = sesame
 #			print 'string' + data
@@ -321,8 +341,6 @@ class ClientConnection(Protocol):
 			self.client.player1.rect.center = data[0]
 			self.client.player1.box.rect.center = data[1]
 			self.client.rain.addNew = data[2]
-		if self.client.quit == 1:
-			self.transport.loseConnection()
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):

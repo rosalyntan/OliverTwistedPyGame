@@ -38,7 +38,7 @@ class GameSpace:
 		#these lines set up the background image, could be done later and could be done in a function
 
 		#random variables in GameSpace
-		self.score1 = 0
+#		self.score1 = 0
 		self.ready = False
 		self.keyspressed = 0 #used to prevent player stopping if 2 keys are down at the same time and one is released
 		self.connected = False #determines whether p2 has connected and game can start
@@ -48,6 +48,7 @@ class GameSpace:
 		self.waitingString = "Waiting for p2 to connect..."
 		
 	def setup(self):
+		self.score1 = 0
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
@@ -224,7 +225,7 @@ class Rain(pygame.sprite.Sprite):
 		self.drops = []
 		self.created = False
 	def tick(self): #create new falling item ~10% of the time
-		create = random.randint(1,400)
+		create = random.randint(1,10)
 		if create==8:
 			self.created = Raindrops(self.gs)
 			self.drops.append(self.created)
@@ -366,10 +367,14 @@ class ServerConnection(Protocol):
 	def dataReceived(self, data):
 #		print 'received data: ' + data
 		if data == 'player 2 connected': #alerts GameSpace when p2 has connected
+			print 'player 2 connected'
 			self.client.connected = True
 			self.client.waitingString = "p2 connected!"
 			if self.client.mode != None:
 				self.transport.write(self.client.mode['name'])
+		elif data == 'game over':
+			self.client.connected = False
+			self.client.mode = None
 		else:
 			data = pickle.loads(data)
 #			print data[2]
