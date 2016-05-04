@@ -43,7 +43,8 @@ class GameSpace:
 		tempMode = backgrounds[random.randint(0,3)]
 		self.bg = pygame.image.load("media/"+tempMode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, tempMode['background_scale'])
-		
+		self.gameOver = 0		
+
 #		random.seed()
 
 		#3. start game loop
@@ -52,12 +53,16 @@ class GameSpace:
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
 		self.p2body = Player2Prop(self)
+		self.endGame = GameOver(self)
 
 		self.bg = pygame.image.load("media/"+self.mode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, self.mode['background_scale'])
 
 	def game_loop(self):
-		if self.ready ==1:
+		if self.gameOver == 1:
+			self.endGame.display(2)
+			pygame.display.flip()
+		elif self.ready ==1:
 			mx, my = pygame.mouse.get_pos()
 
 
@@ -97,6 +102,8 @@ class GameSpace:
 #				self.player2.tofire = 1-self.player2.tofire
 				self.player2.fired = 0
 			self.acked = 1
+			if self.score2 > 2:
+				self.gameOver = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
 			self.screen.blit(self.p2body.image, self.p2body.rect)
@@ -123,6 +130,30 @@ class GameSpace:
 			pygame.display.flip()
 	def write(self, data): # dummy function
 		pass
+
+class GameOver(pygame.sprite.Sprite):
+	def __init__(self, gs = None):
+		self.gs = gs
+		self.playAgain = pygame.image.load("media/penny.png") # need to change image
+		self.quit = pygame.image.load("media/cookie.png") # need to change image
+		self.playRect = self.playAgain.get_rect()
+		self.quitRect = self.quit.get_rect()
+
+		self.playRect.center = [175, 200]
+		self.quitRect.center = [465, 200]
+	def display(self, winner):
+		self.gs.screen.fill((0, 0, 0))
+		if winner == 1:
+			lt = pygame.font.Font('freesansbold.ttf', 30)
+			textSurf = lt.render("You lost :(", True, (255, 255, 255))
+			textRect = textSurf.get_rect()
+		elif winner == 2:
+			lt = pygame.font.Font('freesansbold.ttf', 30)
+			textSurf = lt.render("You win! :)", True, (255, 255, 255))
+			textRect = textSurf.get_rect()
+		self.gs.screen.blit(textSurf, textRect)
+		self.gs.screen.blit(self.playAgain, self.playRect)
+		self.gs.screen.blit(self.quit, self.quitRect)
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
