@@ -26,6 +26,12 @@ http://image.fg-a.com/sports/large-basketball.gif
 BASKETBALL HOOP IMAGE:
 http://cdn.shopify.com/s/files/1/0546/0157/products/Net_White.png?v=1448163544
 
+LEBRON BODY:
+http://assets.nydailynews.com/polopoly_fs/1.1987042.1414290626!/img/httpImage/image.jpg_gen/derivatives/article_307/netsweight26s-lebron3-web.jpg
+
+LEBRON HEAD:
+https://c0bf49af09dabaaf4f81-3c5c7cf439b200c763d8c176f7f8a124.ssl.cf2.rackcdn.com/images/images/4155/photos/large/lebron-james-profile-mouthpiece.jpg_f0046628855ad76148e40fdc9251455a?1371077377
+
 LAKERS COURT IMAGE:
 http://i45.tinypic.com/osyb61.png
 
