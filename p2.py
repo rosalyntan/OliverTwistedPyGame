@@ -71,13 +71,13 @@ class GameSpace:
 			mx, my = pygame.mouse.get_pos()
 
 
-#			for bullet in self.player2.lasers:
-#				for guy in self.rain.drops:
-#					if collision(guy.rect.center, bullet.rect.center):
+			for bullet in self.player2.lasers:
+				for guy in self.rain.drops:
+					if collision(guy.rect.center, bullet.rect.center):
 #						self.rain.drops.remove(guy)
-#						self.player2.lasers.remove(bullet)
+						self.player2.lasers.remove(bullet)
 #						self.score2+=1
-#						break
+						break
 
 			#4. clock tick regulation (framerate)
 			self.clock.tick(60)
