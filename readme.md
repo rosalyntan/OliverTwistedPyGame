@@ -1,8 +1,16 @@
 Team Members: Rosalyn Tan, Nancy McNamara
 
 This repository is for our CSE 30332 Programming Paradigms final project.
-This is a game that is played by two players on different screens. The first player initializes the game by typing "pythyon p1.py" on the command line. The seconds player then opens their program in a different window by similarly typing "python p2.py" on the command line. Player 2's window will remain in a waiting state and display a waiting message until Player 1 has selected the mode in which he or she wishes to play. This is done by clicking one of the four icons on the opening screen for P1.
 
+The game that we created is a game can be played by two players on different screens. The first player initializes the game by typing "pythyon p1.py" on the command line. The seconds player then opens their program in a different window by similarly typing "python p2.py" on the command line. Player 2's window will remain in a waiting state and display a waiting message until Player 1 has selected the mode in which he or she wishes to play. This is done by clicking one of the four icons on the opening screen for P1. A status message on the screen will inform Player 1 whether Player 2 is connected yet. Once Player 2 is connected and Player 1 has selected a mode, the game begins. The two players are playing against each other with the goal of BLAH BLAH BLAH. In all four modes, Player 1 uses the arrow keys to move his/her character from left to right in an attempt to catch as many falling items as possible. For each item that Player 1 catches, a point is awarded.  At the same time, Player 2 is playing as a character on the side of the screen and is attempting to shoot these same items for his own points before his opponent (Player 1) can catch them. He does so by moving the mouse to aim and clicking to fire. For every three items that Player 2 destroys, a point is awarded. The game ends when SOMETHING SOMETHING SOMETHING.
+The four modes include:
+	-Basketball: Player 1 plays as Kobe Bryant tipping the falling basketballs into a hoop on the Lakers' court. Player 2 plays as LeBron James, who is blowing bubblegum bubbles at the basketballs to prevent Kobe from scoring.
+	-Oliver Twist: Player 1 plays as Oliver, holding his bowl out to catch the falling heaps of porridge in the cafeteria of the orphanage. Player 2 playes as Mr. Bumble, hurling a tangle of ladles to prevent Oliver from getting any "more".
+	-Pirates: Player 1 plays as a greedy pirate attempting to stuff his treasure chest with falling gold coins on an abandoned beach. Player 2 operates a cannon to blast the treasure away before the pirate can get his hands on it.
+	-Sesame Street: Player 1 plays as Cookie Monster, who thankfully had a jar on hand to catch all the cookies falling from the sky on Sesame Street. Ever the healthy lifestyle advocate, Michelle Obama is there for Player 2 to help throw the cookies awry with heads of lettuce.
+
+
+All of the images used in the game are credited below:
 
 PENNY IMAGE:
 https://upload.wikimedia.org/wikipedia/commons/5/52/1909-S_VDB_Lincoln_cent_obverse_transparent_background.png

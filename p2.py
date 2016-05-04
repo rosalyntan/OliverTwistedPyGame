@@ -20,7 +20,8 @@ from twisted.internet.task import LoopingCall
 import pygame
 from pygame.locals import *
 
-SERVER_HOST = 'student02.cse.nd.edu'
+SERVER_HOST = 'localhost'
+#SERVER_HOST = 'student02.cse.nd.edu'
 SERVER_PORT = 40041
 
 
