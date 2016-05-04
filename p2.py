@@ -118,9 +118,6 @@ class GameSpace:
 				self.write(zlib.compress(pickle.dumps([self.player2.mx, self.player2.my, pickle.dumps(laserListx), pickle.dumps(laserListy), pickle.dumps(laserListxm), pickle.dumps(laserListym)])))
 				self.player2.fired = 0 # might not need this
 			self.acked = 1
-			# one of the players wins
-			if self.score2 > 20 or self.score1 > 20:
-				self.gameOver = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
 			self.screen.blit(self.p2body.image, self.p2body.rect)
@@ -140,6 +137,8 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
+			if self.score2 > 20 or self.score1 > 20:
+				self.gameOver = 1
 		else:
 			randback = random.randint(1,4)	
 			self.screen.blit(self.bg, (0, 0))
@@ -298,7 +297,7 @@ class Player2(pygame.sprite.Sprite):
 			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#-self.gs.mode['angle_offset']
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5-self.gs.mode['angle_offset']
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = 0
