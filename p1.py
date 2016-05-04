@@ -151,9 +151,10 @@ class Menu(pygame.sprite.Sprite):
 		self.sesameRect.center = [445, 300]
 
 	def display(self):
-#		self.gs.screen.blit(self.gs.bg, (0, 0))
+		mx, my = pygame.mouse.get_pos()
+
 		self.gs.screen.fill((0, 0, 0))
-		lt = pygame.font.Font('freesansbold.ttf', 30)
+		lt = pygame.font.Font('freesansbold.ttf', 80)
 		textSurf = lt.render("Choose a mode!", True, (255, 255, 255))
 		textRect = textSurf.get_rect()
 		self.gs.screen.blit(textSurf, textRect)
@@ -161,7 +162,7 @@ class Menu(pygame.sprite.Sprite):
 		message = pygame.font.Font('freesansbold.ttf', 30)
 		messSurf = message.render(self.gs.waitingString, True, (255, 255, 255))
 		messRect = messSurf.get_rect()
-		messRect.center = 500,400
+		messRect.center = 450,460
 		self.gs.screen.blit(messSurf, messRect)
 
 		self.gs.screen.blit(self.pirateButton, self.pirateRect)
@@ -169,28 +170,39 @@ class Menu(pygame.sprite.Sprite):
 		self.gs.screen.blit(self.otwistButton, self.otwistRect)
 		self.gs.screen.blit(self.sesameButton, self.sesameRect)
 
+		if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
+			print "BUBBLE MATEY"
+		elif  dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
+			print "BUBBLE KOBE"
+		elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
+			print "BUBBLE OT"
+		elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
+			print "BUBBLE SES"
+
+
 		for event in pygame.event.get():
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				mx, my = pygame.mouse.get_pos()
-				if mx > self.pirateRect.centerx-25 and mx < self.pirateRect.centerx+25 and my > self.pirateRect.centery-25 and my < self.pirateRect.centery+25:
+			if event.type == pygame.QUIT:
+				self.gs.quit=1	
+			elif event.type == pygame.MOUSEBUTTONUP:
+				if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
 					print 'clicked pirate'
 					self.gs.mode = pirates
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('pirates')
-				elif mx > self.bballRect.centerx-25 and mx < self.bballRect.centerx+25 and my > self.bballRect.centery-25 and my < self.bballRect.centery+25:
+				elif dist(mx,my,self.bballRect.centerx,self.bballRect.centery)<25:
 					print 'clicked bball'
 					self.gs.mode = bball
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('bball')
-				elif mx > self.otwistRect.centerx-25 and mx < self.otwistRect.centerx+25 and my > self.otwistRect.centery-25 and my < self.otwistRect.centery+25:
+				elif dist(mx,my,self.otwistRect.centerx,self.otwistRect.centery)<25:
 					print 'clicked otwist'
 					self.gs.mode = otwist
 					self.gs.setup()
 					if self.gs.connected:
 						self.gs.write('otwist')
-				elif mx > self.sesameRect.centerx-25 and mx < self.sesameRect.centerx+25 and my > self.sesameRect.centery-25 and my < self.sesameRect.centery+25:
+				elif dist(mx,my,self.sesameRect.centerx,self.sesameRect.centery)<25:
 					print 'clicked sesame'
 					self.gs.mode = sesame
 					self.gs.setup()
@@ -363,7 +375,6 @@ class ServerConnection(Protocol):
 		print 'connection lost from ' + str(self.addr)
 		reactor.stop()
 	def write(self, data): #write function used in GameSpace
-		print "sending", data
 		self.transport.write(data)
 
 class ServerConnFactory(Factory):

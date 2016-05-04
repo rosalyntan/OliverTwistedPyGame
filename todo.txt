@@ -11,7 +11,13 @@ DONE make them run at the same time
 -how do you win and what happens when you do????
 DONE figure out exiting
 -syncing issues?
+-let p1 exit before p2 is connected
 
 THINGS WE PROBABLY SHOULD DO:
 -display other player's score
+
+
+
+THINGS NANCY WOULD DO IN HER WILDEST DREAMS:
+-make bubble things on the intro menu
 -add sounds
