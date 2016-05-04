@@ -52,6 +52,7 @@ class GameSpace:
 	def setup(self):
 		self.score1 = 0
 		self.score2 = 0
+		self.scoreCount = 0
 		self.rain = Rain(self)
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
@@ -67,7 +68,9 @@ class GameSpace:
 					if collision(guy.rect.center, bullet.rect.center):
 						self.rain.drops.remove(guy)
 						self.player2.lasers.remove(bullet)
-						self.score2+=1
+						if self.scoreCount%3 == 1:
+							self.score2+=1
+							self.scoreCount+=1
 						break
 
 		#	mx, my = pygame.mouse.get_pos()
