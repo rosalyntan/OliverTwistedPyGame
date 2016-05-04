@@ -9,6 +9,8 @@ The four modes include:
 	-Pirates: Player 1 plays as a greedy pirate attempting to stuff his treasure chest with falling gold coins on an abandoned beach. Player 2 operates a cannon to blast the treasure away before the pirate can get his hands on it.
 	-Sesame Street: Player 1 plays as Cookie Monster, who thankfully had a jar on hand to catch all the cookies falling from the sky on Sesame Street. Ever the healthy lifestyle advocate, Michelle Obama is there for Player 2 to help throw the cookies awry with heads of lettuce.
 
+The GitHub repository is linked below and demonstrates incremental (albeit slow) progress:
+https://github.com/rosalyntan/cse30332-final-project
 
 All of the images used in the game are credited below:
 

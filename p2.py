@@ -21,7 +21,10 @@ import pygame
 from pygame.locals import *
 
 SERVER_HOST = 'localhost'
+<<<<<<< HEAD
 #SERVER_HOST = 'student02.cse.nd.edu'
+=======
+>>>>>>> c777cba121c6899b8ea5516d4df2e28ec4a5c40f
 SERVER_PORT = 40041
 
 
@@ -66,7 +69,10 @@ class GameSpace:
 
 	def game_loop(self):
 		if self.gameOver == 1:
-			self.endGame.display(2)
+			if self.score1 > 20:
+				self.endGame.display(1)
+			else:
+				self.endGame.display(2)
 			pygame.display.flip()
 		elif self.ready ==1:
 			mx, my = pygame.mouse.get_pos()
@@ -88,7 +94,7 @@ class GameSpace:
 				if event.type == pygame.QUIT:
 			#		pygame.quit()
 			#		sys.exit()
-					self.quit = 1
+					self.quit()
 				if event.type == pygame.MOUSEBUTTONDOWN:
 					self.player2.tofire = 1
 				if event.type == pygame.MOUSEBUTTONUP:
@@ -116,8 +122,6 @@ class GameSpace:
 				self.write(zlib.compress(pickle.dumps([self.player2.mx, self.player2.my, pickle.dumps(laserListx), pickle.dumps(laserListy), pickle.dumps(laserListxm), pickle.dumps(laserListym)])))
 				self.player2.fired = 0 # might not need this
 			self.acked = 1
-			if self.score2 > 20:
-				self.gameOver = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
 			self.screen.blit(self.p2body.image, self.p2body.rect)
@@ -137,10 +141,11 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
+			if self.score2 > 20 or self.score1 > 20:
+				self.gameOver = 1
 		else:
 			randback = random.randint(1,4)	
 			self.screen.blit(self.bg, (0, 0))
-#			self.screen.fill((0, 0, 0))
 			lt = pygame.font.Font('freesansbold.ttf', 50)
 			textSurf = lt.render("Waiting for Player 1", True, (5, 100, 5))
 			TextRect = textSurf.get_rect()
@@ -148,48 +153,51 @@ class GameSpace:
 			pygame.display.flip()
 	def write(self, data): # dummy function
 		pass
+	def quit(self): # dummy function
+		pass
 
 class GameOver(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
 		self.gs = gs
-		self.playAgain = pygame.image.load("media/penny.png") # need to change image
-		self.quit = pygame.image.load("media/cookie.png") # need to change image
-		self.playRect = self.playAgain.get_rect()
-		self.quitRect = self.quit.get_rect()
+#		self.playAgain = pygame.image.load("media/penny.png") # need to change image
+#		self.quit = pygame.image.load("media/cookie.png") # need to change image
+#		self.playRect = self.playAgain.get_rect()
+#		self.quitRect = self.quit.get_rect()
 
-		self.playRect.center = [175, 200]
-		self.quitRect.center = [465, 200]
-		self.messageSent = 0
+#		self.playRect.center = [175, 200]
+#		self.quitRect.center = [465, 200]
+#		self.messageSent = 0
 	def display(self, winner):
-		if self.messageSent == 0:
-			self.gs.write('game over')
-			print 'game over sent'
-			self.messageSent = 1
+#		if self.messageSent == 0:
+#			self.gs.write('game over')
+#			print 'game over sent'
+#			self.messageSent = 1
 		self.gs.screen.fill((0, 0, 0))
 		if winner == 1:
 			lt = pygame.font.Font('freesansbold.ttf', 30)
 			textSurf = lt.render("You lost :(", True, (255, 255, 255))
-			textRect = textSurf.get_rect()
 		elif winner == 2:
 			lt = pygame.font.Font('freesansbold.ttf', 30)
 			textSurf = lt.render("You win! :)", True, (255, 255, 255))
-			textRect = textSurf.get_rect()
+		textRect = textSurf.get_rect()
+		textRect.center = [200, 300]
 		self.gs.screen.blit(textSurf, textRect)
-		self.gs.screen.blit(self.playAgain, self.playRect)
-		self.gs.screen.blit(self.quit, self.quitRect)
+#		self.gs.screen.blit(self.playAgain, self.playRect)
+#		self.gs.screen.blit(self.quit, self.quitRect)
 		for event in pygame.event.get():
-			if event.type == pygame.MOUSEBUTTONDOWN:
-				mx, my = pygame.mouse.get_pos()
-				if mx > self.playRect.centerx-25 and mx < self.playRect.centerx+25 and my > self.playRect.centery-25 and my < self.playRect.centery+25:
-					self.gs.gameOver = 0
-					self.gs.ready = 0
-					self.gs.acked = 0
-					self.messageSent = 0
-					self.gs.write('player 2 connected')
-					print 'clicked play again'
-				elif mx > self.quitRect.centerx-25 and mx < self.quitRect.centerx+25 and my > self.quitRect.centery-25 and my < self.quitRect.centery+25:
-					print 'clicked quit'
-					self.gs.quit = 1
+			if event.type == pygame.QUIT:
+				self.gs.quit()
+#				mx, my = pygame.mouse.get_pos()
+#				if mx > self.playRect.centerx-25 and mx < self.playRect.centerx+25 and my > self.playRect.centery-25 and my < self.playRect.centery+25:
+#					self.gs.gameOver = 0
+#					self.gs.ready = 0
+#					self.gs.acked = 0
+#					self.messageSent = 0
+#					self.gs.write('player 2 connected')
+#					print 'clicked play again'
+#				elif mx > self.quitRect.centerx-25 and mx < self.quitRect.centerx+25 and my > self.quitRect.centery-25 and my < self.quitRect.centery+25:
+#					print 'clicked quit'
+#					self.gs.quit = 1
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -293,7 +301,7 @@ class Player2(pygame.sprite.Sprite):
 			self.fired = 1
 		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#-self.gs.mode['angle_offset']
+			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5-self.gs.mode['angle_offset']
 			self.image = pygame.transform.rotate(self.orig_image, self.angle)
 			self.rect = self.image.get_rect(center = self.rect.center)
 			self.tofire = 0
@@ -372,6 +380,8 @@ class ClientConnection(Protocol):
 		reactor.stop()
 	def write(self, data):
 		self.transport.write(data)
+	def quit(self):
+		self.transport.loseConnection()
 
 class ClientConnFactory(ClientFactory):
 	def __init__(self, client):
@@ -379,6 +389,7 @@ class ClientConnFactory(ClientFactory):
 	def buildProtocol(self, addr):
 		proto = ClientConnection(self.client)
 		self.client.write = proto.write # sets write function in GameSpace to connection's write function
+		self.client.quit = proto.quit # sets quit function in GameSpace to connection's quit function
 		return proto
 
 

@@ -48,6 +48,7 @@ class GameSpace:
 		self.quit = 0
 		self.mode = None
 		self.waitingString = "Waiting for p2 to connect..."
+		self.gameOver = 0
 		
 	def setup(self):
 		self.score1 = 0
@@ -57,11 +58,19 @@ class GameSpace:
 		self.player1 = Player1(self)
 		self.player2 = Player2(self)
 		self.p2body = Player2Prop(self)
+		self.endGame = GameOver(self)
 		self.bg = pygame.image.load("media/"+self.mode['background_image'])
 		self.bg = pygame.transform.scale(self.bg, self.mode['background_scale'])
 
 	def game_loop(self):
-		if self.connected and self.mode != None:
+		if self.gameOver == 1:
+			self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1, pickle.dumps([]), pickle.dumps([]), self.score2]))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+			if self.score1 > 20:
+				self.endGame.display(1)
+			else:
+				self.endGame.display(2)
+			pygame.display.flip()
+		elif self.connected and self.mode != None:
 			self.counter+=1;
 			for bullet in self.player2.lasers:
 				for guy in self.rain.drops:
@@ -70,7 +79,7 @@ class GameSpace:
 						self.player2.lasers.remove(bullet)
 						if self.scoreCount%3 == 1:
 							self.score2+=1
-							self.scoreCount+=1
+						self.scoreCount+=1
 						break
 
 		#	mx, my = pygame.mouse.get_pos()
@@ -89,7 +98,8 @@ class GameSpace:
 				if event.type == pygame.QUIT:
 	#				pygame.quit()
 	#				sys.exit()
-					self.quit = 1
+	#				self.quit = 1
+					self.quit()
 				if event.type == KEYDOWN:
 					if event.key == 275: #right arrow
 						self.player1.Moving = "R" 
@@ -151,12 +161,16 @@ class GameSpace:
 			for guy in self.rain.drops:
 				self.screen.blit(guy.image, guy.rect)
 			pygame.display.flip()
+			if self.score2 > 20 or self.score1 > 20:
+				self.gameOver = 1
 		else: #if p2 has not connected yet
 			self.menu.display()
 			pygame.display.flip()
 			
 			
 	def write(self,data): #dummy function so that we can use parent connection's write function
+		pass
+	def quit(self): # dummy function connected to connection's quit function
 		pass
 
 class Menu(pygame.sprite.Sprite):
@@ -213,7 +227,7 @@ class Menu(pygame.sprite.Sprite):
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				self.gs.quit=1	
+				self.gs.quit()
 			elif event.type == pygame.MOUSEBUTTONUP:
 				if dist(mx,my,self.pirateRect.centerx,self.pirateRect.centery)<25:
 					print 'clicked pirate'
@@ -248,6 +262,25 @@ class Menu(pygame.sprite.Sprite):
 						self.gs.write('sesame')
 						print 'sending sesame'
 				
+class GameOver(pygame.sprite.Sprite):
+	def __init__(self, gs = None):
+		self.gs = gs
+
+	def display(self, winner):
+		self.gs.screen.fill((0, 0, 0))
+		if winner == 2:
+			lt = pygame.font.Font('freesansbold.ttf', 30)
+			textSurf = lt.render("You lost :(", True, (255, 255, 255))
+		elif winner == 1:
+			lt = pygame.font.Font('freesansbold.ttf', 30)
+			textSurf = lt.render("You win! :)", True, (255, 255, 255))
+		textRect = textSurf.get_rect()
+		textRect.center = [200, 300]
+		self.gs.screen.blit(textSurf, textRect)
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				self.gs.quit()
+
 
 class Rain(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
@@ -357,10 +390,10 @@ class Player2(pygame.sprite.Sprite):
 #			self.tofire = False
 #		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-#			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#self.gs.mode['angle_offset']
+		self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#self.gs.mode['angle_offset']
 #			#self.image = rot_center(self.orig_image, angle)	
-#			self.image = pygame.transform.rotate(self.orig_image, self.angle)
-#			self.rect = self.image.get_rect(center = self.rect.center)
+		self.image = pygame.transform.rotate(self.orig_image, self.angle)
+		self.rect = self.image.get_rect(center = self.rect.center)
 #			self.tofire = 0
 
 class Laser(pygame.sprite.Sprite):
@@ -404,11 +437,11 @@ class ServerConnection(Protocol):
 			if self.client.mode != None:
 				print 'sending existing mode' + self.client.mode['name']
 				self.transport.write(self.client.mode['name'])
-		elif data == 'game over':
-			print 'game over received'
-			self.client.connected = False
-			self.client.mode = None
-			self.client.acked = False
+#		elif data == 'game over':
+#			print 'game over received'
+#			self.client.connected = False
+#			self.client.mode = None
+#			self.client.acked = False
 		else:
 			self.client.player2.lasers = []
 			data = pickle.loads(zlib.decompress(data))
@@ -433,6 +466,8 @@ class ServerConnection(Protocol):
 		reactor.stop()
 	def write(self, data): #write function used in GameSpace
 		self.transport.write(data)
+	def quit(self):
+		self.transport.loseConnection()
 
 class ServerConnFactory(Factory):
 	def __init__(self, client):
@@ -440,6 +475,7 @@ class ServerConnFactory(Factory):
 	def buildProtocol(self, addr):
 		proto = ServerConnection(addr, self.client)
 		self.client.write = proto.write #sets write function in GameSpace to connection's write function
+		self.client.quit = proto.quit # sets quit function in GameSpace to connection's quit function
 		return proto
 
 
