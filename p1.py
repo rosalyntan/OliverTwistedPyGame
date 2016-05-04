@@ -160,8 +160,7 @@ class Menu(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
 		self.pirateButton = pygame.image.load("media/penny.png")
-		self.bballButbg, (0,0))
-119                         self.screen.blit(selfton = pygame.image.load("media/basketball.png")
+		self.bballButton = pygame.image.load("media/basketball.png")
 		self.otwistButton = pygame.image.load("media/porridge.png")
 		self.sesameButton = pygame.image.load("media/cookie.png")
 		

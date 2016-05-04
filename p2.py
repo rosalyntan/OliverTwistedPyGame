@@ -195,18 +195,18 @@ class Rain(pygame.sprite.Sprite):
 		self.addNew = False
 		self.drops = []
 	def tick(self):
-		if self.addNew:
-			self.drops.append(Raindrops(self.addNew, self.gs))
+#		if self.addNew:
+#			self.drops.append(Raindrops(self.addNew, -25, self.gs))
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1])
 
 class Raindrops(pygame.sprite.Sprite):
-	def __init__(self, x, gs = None):
+	def __init__(self, x, y, gs = None):
 		pygame.sprite.Sprite.__init__(self)
 		self.gs = gs
 		self.image = pygame.image.load("media/"+self.gs.mode['ball_image'])
 		self.rect = self.image.get_rect()
-		self.rect.center = [x,-25]
+		self.rect.center = [x,y]
 
 class Player2Prop(pygame.sprite.Sprite):
 	def __init__(self, gs = None):
@@ -357,11 +357,19 @@ class ClientConnection(Protocol):
 			self.client.setup()
 			self.client.ready = 1
 		else:
-			data =  pickle.loads(data)
+			data =  pickle.loads(zlib.decompress(data))
 			self.client.player1.rect.center = data[0]
 			self.client.player1.box.rect.center = data[1]
-			self.client.rain.addNew = data[2]
-			self.client.score1 = data[3]
+			self.client.score1 = data[2]
+			self.client.rain.drops = []
+			rainx = pickle.loads(data[3])
+			rainy = pickle.loads(data[4])
+			i=0
+			for x in rainx:
+				self.client.rain.drops(append(Raindrop(x, rainy[i], self.client)))
+				i+=1
+#			print pickle.loads(data[3])
+#			print pickle.loads(data[4])
 	def connectionMade(self):
 		self.transport.write('player 2 connected')
 	def connectionLost(self, reason):
