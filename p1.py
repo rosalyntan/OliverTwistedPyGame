@@ -105,7 +105,13 @@ class GameSpace:
 			for laser in self.player2.lasers:
 				laser.tick()
 			if self.acked and self.counter%3==0:
-				self.write(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, int(self.rain.created), self.score1])) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
+				rainx = []
+				rainy = []
+				for drop in self.Rain.drops:
+					rainx.append(drop.rect.center[0])
+					rainy.append(drop.rect.center[1])
+			
+				self.write(zlib.compress(pickle.dumps([self.player1.rect.center, self.player1.box.rect.center, self.score1], pickle.dumps(rainx), pickle.dumps(rainy)))) #after ticks sent to objects, send location of player & box, send x value of new coin, send player 1 score
 				print 'sending data'
 			self.acked = True
 			#7. finally, display game object
@@ -154,7 +160,8 @@ class Menu(pygame.sprite.Sprite):
 	def __init__(self, gs=None):
 		self.gs = gs
 		self.pirateButton = pygame.image.load("media/penny.png")
-		self.bballButton = pygame.image.load("media/basketball.png")
+		self.bballButbg, (0,0))
+119                         self.screen.blit(selfton = pygame.image.load("media/basketball.png")
 		self.otwistButton = pygame.image.load("media/porridge.png")
 		self.sesameButton = pygame.image.load("media/cookie.png")
 		
@@ -401,7 +408,7 @@ class ServerConnection(Protocol):
 			self.client.mode = None
 			self.client.acked = False
 		else:
-			data = pickle.loads(data)
+			data = pickle.loads(zlib.decompress(data))
 #			print data[2]
 			self.client.player2.mx = data[0]
 			self.client.player2.my = data[1]
