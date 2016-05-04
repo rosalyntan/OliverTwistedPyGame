@@ -52,6 +52,7 @@ class GameSpace:
 
 		#3. start game loop
 	def setup(self):
+		self.tickNum = 0
 		self.score1 = 0
 		self.score2 = 0
 		self.rain = Rain(self)
@@ -98,14 +99,18 @@ class GameSpace:
 			self.rain.tick()
 			self.player1.tick()
 			self.player2.tick()
+			tickNum++
 			for laser in self.player2.lasers:
 				laser.tick()
-#					self.player2.lasers.remove(laser)
-			if self.acked == 1:
-#				laserPickle = pickle.dumps(self.player2.lasers) # issues pickling object of objects
-				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.player2.fired, self.score2]))
-#				self.player2.tofire = 1-self.player2.tofire
-				self.player2.fired = 0
+			if self.acked == 1 and tickNum%20 == 0:
+				laserListx = []
+				laserListy = []
+				for laser in self.player2.lasers:
+					laserListx.append(laser.rect.centerx)
+					laserListy.append(laser.rect.centery)
+				# player 2 should send over rotation information, score, laser locations
+				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.score2, pickle.dumps(laserListx), pickle.dumps(laserListy)]))
+				self.player2.fired = 0 # might not need this
 			self.acked = 1
 			if self.score2 > 20:
 				self.gameOver = 1
