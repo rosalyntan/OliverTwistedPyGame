@@ -340,36 +340,36 @@ class Player2(pygame.sprite.Sprite):
 			elif guy.rect.center[1] < -20 or guy.rect.center[1] > 500:
 				self.lasers.remove(guy)
 		#this conditional prevents movement while firing
-		if self.tofire == 1:
+#		if self.tofire == 1:
 #			self.realx=mx
 #			self.realy=my
 	
 			#code to emit a laser beam block
 #			print 'making lasers'
-			xSlope = self.mx-self.rect.center[0]
-			ySlope = self.my-self.rect.center[1]
-			total = math.fabs(xSlope)+math.fabs(ySlope)
-			self.lasers.append(Laser(self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total, self.gs))
+#			xSlope = self.mx-self.rect.center[0]
+#			ySlope = self.my-self.rect.center[1]
+#			total = math.fabs(xSlope)+math.fabs(ySlope)
+#			self.lasers.append(Laser(self.rect.center[0],self.rect.center[1],xSlope/total, ySlope/total, self.gs))
 #			self.tofire = False
-		else:	
+#		else:	
 			#code to calculate the angle between my current direction and the mouse position (see math.atan2)
-			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#self.gs.mode['angle_offset']
-			#self.image = rot_center(self.orig_image, angle)	
-			self.image = pygame.transform.rotate(self.orig_image, self.angle)
-			self.rect = self.image.get_rect(center = self.rect.center)
-			self.tofire = 0
+#			self.angle = math.atan2(self.my-self.rect.center[1],self.mx-self.rect.center[0])*-180/math.pi+211.5#self.gs.mode['angle_offset']
+#			#self.image = rot_center(self.orig_image, angle)	
+#			self.image = pygame.transform.rotate(self.orig_image, self.angle)
+#			self.rect = self.image.get_rect(center = self.rect.center)
+#			self.tofire = 0
 
 class Laser(pygame.sprite.Sprite):
-	def __init__(self,xc=320, yc=240, xm=1, ym=1, gs=None):
+	def __init__(self,x,y,xm,ym,gs=None):
 		pygame.sprite.Sprite.__init__(self)
-		xc=xc+xm*32
-		yc=yc+ym*32
-		self.xm=xm*10
-		self.ym=ym*10
+#		xc=xc+xm*32
+#		yc=yc+ym*32
+		self.xm=xm
+		self.ym=ym
 		self.gs = gs
 		self.image = pygame.image.load("media/"+self.gs.mode['bullet_image'])
 		self.rect = self.image.get_rect()
-		self.rect.center=[xc,yc]
+		self.rect.center=[x,y]
 
 	def tick(self):
 		self.rect = self.rect.move([self.xm,self.ym])
@@ -406,13 +406,22 @@ class ServerConnection(Protocol):
 			self.client.mode = None
 			self.client.acked = False
 		else:
+			self.client.player2.lasers = []
 			data = pickle.loads(zlib.decompress(data))
 #			print data[2]
 			self.client.player2.mx = data[0]
 			self.client.player2.my = data[1]
 			self.client.score2 = data[2]
-			print pickle.loads(data[3])
-			print pickle.loads(data[4])
+			data[3]=pickle.loads(data[3])
+			data[4] = pickle.loads(data[4])
+			data[5] = pickle.loads(data[5])
+			data[6] = pickle.loads(data[6])
+			i = 0
+			for x in data[3]:
+				self.client.player2.lasers.append(Laser(data[3][i], data[4][i], data[5][i], data[6][i], self.client))
+				i+=1
+	
+			
 #		print "connection made"
 		if self.client.quit == 1:
 			self.transport.loseConnection()
