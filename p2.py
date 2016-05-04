@@ -109,7 +109,7 @@ class GameSpace:
 					laserListx.append(laser.rect.centerx)
 					laserListy.append(laser.rect.centery)
 				# player 2 should send over rotation information, score, laser locations
-				self.write(pickle.dumps([self.player2.mx, self.player2.my, self.score2, pickle.dumps(laserListx), pickle.dumps(laserListy)]))
+				self.write(zlib.compress(pickle.dumps([self.player2.mx, self.player2.my, self.score2, pickle.dumps(laserListx), pickle.dumps(laserListy)])))
 				self.player2.fired = 0 # might not need this
 			self.acked = 1
 			if self.score2 > 20:
