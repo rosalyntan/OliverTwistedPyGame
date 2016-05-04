@@ -2,22 +2,22 @@ THINGS WE NEED TO DO:
 DONE fix intro menu
 DONE figure out the coin error
 DONE make p2 wait for acknowledgment
--make coins disappear (in jar) on both ends
+DONE make coins disappear (in jar) on both ends
 DONE make them run at the same time
 DONE how do you win and what happens when you do
 DONE figure out exiting
--syncing issues?
+DONE syncing issues?
 -let p1 exit before p2 is connected
 -add queue
 -starting new game after a win
 -quitting game after a win
--error when xslope = 0
+DONE error when xslope = 0
 
 THINGS WE PROBABLY SHOULD DO:
--display other player's score
+DONE-display other player's score
 -power ups
 -make intro menu maybe nicer?
 
 THINGS NANCY WOULD DO IN HER WILDEST DREAMS:
--make bubble things on the intro menu
+DONE make bubble things on the intro menu
 -add sounds

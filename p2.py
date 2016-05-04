@@ -21,6 +21,7 @@ import pygame
 from pygame.locals import *
 
 SERVER_HOST = 'localhost'
+#SERVER_HOST = 'student02.cse.nd.edu'
 SERVER_PORT = 40041
 
 
@@ -104,7 +105,7 @@ class GameSpace:
 			self.tickNum+=1
 			for laser in self.player2.lasers:
 				laser.tick()
-			if self.acked == 1 and self.tickNum%5 == 0:
+			if self.acked == 1 and self.tickNum%3 == 0:
 				laserListx = []
 				laserListy = []
 				laserListxm = []
@@ -125,12 +126,18 @@ class GameSpace:
 			for laser in self.player2.lasers:
 				self.screen.blit(laser.image, laser.rect)
 			self.screen.blit(self.player2.image, self.player2.rect)
+			#text & text display, could be done in a function
 			lt = pygame.font.Font('freesansbold.ttf',115)
-			textSurf = lt.render(str(self.score2), True, (100, 100, 100))
+			textSurf = lt.render(str(self.score1), True, (255, 0, 169))
 			TextRect = textSurf.get_rect()
-			text2Surf = lt.render(str(self.score1), True, (100,100,100))
+			text2Surf = lt.render(str(self.score2), True, (255,255,255))
 			TextRect2 = text2Surf.get_rect()
-			TextRect2.center = [64,178]
+			if self.score2>self.score1:
+				TextRect.center = [TextRect.size[1]/2, 150]
+				TextRect2.center = [TextRect2.size[1]/2,50]
+			else:
+				TextRect.center = [TextRect.size[1]/2, 50]
+				TextRect2.center = [TextRect2.size[1]/2,150]
 			self.screen.blit(text2Surf, TextRect2)
 			self.screen.blit(textSurf, TextRect)
 			self.screen.blit(self.player1.box.image, self.player1.box.rect)	
