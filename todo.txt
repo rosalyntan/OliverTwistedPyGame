@@ -7,16 +7,14 @@ DONE make them run at the same time
 DONE how do you win and what happens when you do
 DONE figure out exiting
 DONE syncing issues?
--let p1 exit before p2 is connected
--add queue
--starting new game after a win
--quitting game after a win
+DONE let p1 exit before p2 is connected
+DONE quitting game after a win
 DONE error when xslope = 0
 
 THINGS WE PROBABLY SHOULD DO:
-DONE-display other player's score
+DONE display other player's score
 -power ups
--make intro menu maybe nicer?
+DONE make intro menu maybe nicer
 
 THINGS NANCY WOULD DO IN HER WILDEST DREAMS:
 DONE make bubble things on the intro menu
