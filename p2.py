@@ -366,7 +366,7 @@ class ClientConnection(Protocol):
 			rainy = pickle.loads(data[4])
 			i=0
 			for x in rainx:
-				self.client.rain.drops(append(Raindrop(x, rainy[i], self.client)))
+				self.client.rain.drops.append(Raindrop(x, rainy[i], self.client))
 				i+=1
 #			print pickle.loads(data[3])
 #			print pickle.loads(data[4])
