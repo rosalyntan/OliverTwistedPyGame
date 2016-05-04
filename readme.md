@@ -1,6 +1,8 @@
 Team Members: Rosalyn Tan, Nancy McNamara
 
 This repository is for our CSE 30332 Programming Paradigms final project.
+This is a game that is played by two players on different screens. The first player initializes the game by typing "pythyon p1.py" on the command line. The seconds player then opens their program in a different window by similarly typing "python p2.py" on the command line. Player 2's window will remain in a waiting state and display a waiting message until Player 1 has selected the mode in which he or she wishes to play. This is done by clicking one of the four icons on the opening screen for P1.
+
 
 PENNY IMAGE:
 https://upload.wikimedia.org/wikipedia/commons/5/52/1909-S_VDB_Lincoln_cent_obverse_transparent_background.png
