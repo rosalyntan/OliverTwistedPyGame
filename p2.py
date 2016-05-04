@@ -102,7 +102,6 @@ class GameSpace:
 					laserListym.append(laser.ym)
 				# player 2 sends over rotation information, score, laser locations, laser slopes
 				self.write(zlib.compress(pickle.dumps([self.player2.mx, self.player2.my, pickle.dumps(laserListx), pickle.dumps(laserListy), pickle.dumps(laserListxm), pickle.dumps(laserListym)])))
-#				self.player2.fired = 0 # might not need this
 			self.acked = 1
 			#7. finally, display game object
 			self.screen.blit(self.bg, (0,0))
@@ -208,18 +207,6 @@ class Player1(pygame.sprite.Sprite):
 		self.box = Box(self.rect.center, self.gs)
 	def tick(self):
 		pass
-#		if self.Moving == "R":
-#			self.rect = self.rect.move([5,0])
-#			self.box.rect = self.box.rect.move([5,0])	
-#		elif self.Moving == "L":
-#			self.rect = self.rect.move([-5,0])
-#			self.box.rect = self.box.rect.move([-5,0])
-#		if self.rect.center[0]<self.gs.mode['max_player_left']:
-#			self.rect.center = [self.gs.mode['max_player_left'], self.rect.center[1]]
-#			self.box.rect.center = [self.rect.center[0]+self.gs.mode['box_offset'][0], self.rect.center[1]+self.gs.mode['box_offset'][1]]
-#		elif self.rect.center[0]>self.gs.mode['max_player_right']:
-#			self.rect.center = [self.gs.mode['max_player_right'], self.rect.center[1]]
-#			self.box.rect.center = [self.rect.center[0]+self.gs.mode['box_offset'][0], self.rect.center[1]+self.gs.mode['box_offset'][1]]
 
 # player 1 catches things in here
 class Box(pygame.sprite.Sprite):
@@ -286,11 +273,11 @@ class Player2(pygame.sprite.Sprite):
 class Laser(pygame.sprite.Sprite):
 	def __init__(self, xc=320, yc=240, xm=1, ym=1, gs=None):
 		pygame.sprite.Sprite.__init__(self)
-		xc=xc+xm*125
-		yc=yc+ym*125
+		self.gs = gs
+		xc=xc+xm*self.gs.mode['bullet_offset']
+		yc=yc+ym*self.gs.mode['bullet_offset']
 		self.xm=xm*10
 		self.ym=ym*10
-		self.gs = gs
 		self.image = pygame.image.load("media/"+self.gs.mode['bullet_image'])
 		self.rect = self.image.get_rect()
 		self.rect.center=[xc,yc]
@@ -312,9 +299,6 @@ class ClientConnection(Protocol):
 	def __init__(self, client):
 		self.client = client
 	def dataReceived(self, data):
-#		if self.client.quit == 1:
-#			print 'quit called'
-#			self.transport.loseConnection()
 		# detect which mode is chosen
 		if data == 'sesame':
 			self.client.mode = sesame

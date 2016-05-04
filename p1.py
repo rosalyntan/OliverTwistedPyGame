@@ -276,9 +276,6 @@ class Rain(pygame.sprite.Sprite):
 		if create==8:
 			self.created = Raindrops(self.gs)
 			self.drops.append(self.created)
-#			self.created = self.created.x #sent to p2
-#		else:
-#			self.created = False #sent to p2
 		for guy in self.drops:
 			guy.rect = guy.rect.move([0,1]) #all coins down 1 pixel
 
@@ -350,9 +347,6 @@ class Player2(pygame.sprite.Sprite):
 		self.angle = 0
 		#keep original image to limit resize errors
 		self.orig_image = self.image
-
-		#if I can fire laser beams, this flag will say whether I should be firing them right now
-#		self.tofire = 0
 	def tick(self):
 		# delete lasers when the go off-screen
 		for guy in self.lasers:
@@ -418,8 +412,6 @@ class ServerConnection(Protocol):
 			for x in data[2]:
 				self.client.player2.lasers.append(Laser(data[2][i], data[3][i], data[4][i], data[5][i], self.client))
 				i+=1
-#		if self.client.quit == 1:
-#			self.transport.loseConnection()
 	def connectionLost(self, reason):
 		reactor.stop()
 	def write(self, data): #write function used in GameSpace
